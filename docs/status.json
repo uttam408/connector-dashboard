@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:12:15Z",
+  "generated": "2026-09-03T21:14:53Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -33,7 +33,7 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "1m ago",
+          "note": "3m ago",
           "age_hours": 0.0
         },
         {
@@ -51,42 +51,42 @@
           "label": "Whoop (official API)",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.6
+          "age_hours": 7.7
         },
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "47m ago",
+          "note": "50m ago",
           "age_hours": 0.8
         },
         {
           "label": "Strava",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.6
+          "age_hours": 7.7
         },
         {
           "label": "Garmin",
           "color": "red",
           "note": "last token refresh 2d ago",
-          "age_hours": 51.7
+          "age_hours": 51.8
         },
         {
           "label": "ntfy push",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 6.0
+          "age_hours": 6.1
         },
         {
-          "label": "iMessage notifier",
+          "label": "iMessage",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 6.0
+          "age_hours": 6.1
         },
         {
-          "label": "WhatsApp (local DB)",
+          "label": "WhatsApp",
           "color": "green",
-          "note": "23m ago",
+          "note": "26m ago",
           "age_hours": 0.4
         },
         {
@@ -104,13 +104,13 @@
           "label": "morning-checkin",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.0
+          "age_hours": 7.1
         },
         {
           "label": "checkin-digest",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 6.0
+          "age_hours": 6.1
         },
         {
           "label": "import-downloads-to-photos",
@@ -126,7 +126,7 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "1m ago",
+          "note": "3m ago",
           "age_hours": 0.0
         },
         {

@@ -177,7 +177,7 @@ for label, p in [
 
 # ---------------------------------------------- notification delivery ----
 digest_log = "~/Library/Logs/checkin-digest.log"
-for label in ("ntfy push", "iMessage notifier"):
+for label in ("ntfy push", "iMessage"):
     h = age_hours(digest_log)
     if h is not None and h < CUTOFF_H:
         services.append(item(label, "green", rel(h), h))
@@ -191,11 +191,11 @@ wa = ("~/Library/Group Containers/group.net.whatsapp.WhatsApp.shared/"
       "ChatStorage.sqlite")
 h = age_hours(wa)
 if h is None:
-    services.append(item("WhatsApp (local DB)", "red", "Desktop DB not found"))
+    services.append(item("WhatsApp", "red", "Desktop DB not found"))
 elif h < CUTOFF_H:
-    services.append(item("WhatsApp (local DB)", "green", rel(h), h))
+    services.append(item("WhatsApp", "green", rel(h), h))
 else:
-    services.append(item("WhatsApp (local DB)", "red",
+    services.append(item("WhatsApp", "red",
                          f"Desktop not syncing — DB {rel(h)}", h))
 
 
