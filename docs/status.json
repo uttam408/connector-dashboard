@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T20:56:20Z",
+  "generated": "2026-09-03T21:05:48Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -8,32 +8,38 @@
         {
           "label": "Google Drive (MCP)",
           "color": "green",
-          "note": "connected"
+          "note": ""
         },
         {
           "label": "PitchBook Premium",
           "color": "red",
-          "note": "needs authentication"
+          "note": "not in use right now",
+          "intentional": true
         },
         {
           "label": "Google Calendar (MCP)",
           "color": "green",
-          "note": "connected"
+          "note": ""
         },
         {
           "label": "Gmail (MCP)",
           "color": "green",
-          "note": "connected"
+          "note": ""
         },
         {
           "label": "Playwright",
           "color": "green",
-          "note": "connected"
+          "note": ""
         },
         {
           "label": "Tailscale",
           "color": "green",
-          "note": "connected \u00b7 1 peer"
+          "note": "1 peer"
+        },
+        {
+          "label": "Clock display",
+          "color": "red",
+          "note": "Pi unreachable"
         },
         {
           "label": "Personal Gmail (CLI)",
@@ -48,50 +54,50 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "red",
-          "note": "last token 28d ago",
-          "age_hours": 677.5
+          "note": "last token refresh 28d ago",
+          "age_hours": 677.7
         },
         {
           "label": "Whoop (official API)",
           "color": "green",
-          "note": "token refreshed 7h ago",
-          "age_hours": 7.4
+          "note": "8h ago",
+          "age_hours": 7.5
         },
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "token refreshed 31m ago",
-          "age_hours": 0.5
+          "note": "41m ago",
+          "age_hours": 0.7
         },
         {
           "label": "Strava",
           "color": "green",
-          "note": "token refreshed 7h ago",
-          "age_hours": 7.4
+          "note": "8h ago",
+          "age_hours": 7.5
         },
         {
           "label": "Garmin",
           "color": "red",
-          "note": "last token 2d ago",
-          "age_hours": 51.5
+          "note": "last token refresh 2d ago",
+          "age_hours": 51.6
         },
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "via check-in digest 6h ago",
-          "age_hours": 5.8
+          "note": "6h ago",
+          "age_hours": 5.9
         },
         {
           "label": "iMessage notifier",
           "color": "green",
-          "note": "via check-in digest 6h ago",
-          "age_hours": 5.8
+          "note": "6h ago",
+          "age_hours": 5.9
         },
         {
           "label": "WhatsApp (local DB)",
           "color": "green",
-          "note": "Desktop synced 7m ago",
-          "age_hours": 0.1
+          "note": "17m ago",
+          "age_hours": 0.3
         }
       ]
     },
@@ -101,31 +107,31 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "ran 7h ago",
-          "age_hours": 6.7
+          "note": "7h ago",
+          "age_hours": 6.9
         },
         {
           "label": "checkin-digest",
           "color": "green",
-          "note": "ran 6h ago",
-          "age_hours": 5.8
+          "note": "6h ago",
+          "age_hours": 5.9
         },
         {
           "label": "import-downloads-to-photos",
           "color": "green",
-          "note": "loaded \u00b7 runs Mon & Thu 23:00"
+          "note": "Mon & Thu 23:00"
         },
         {
           "label": "strava-kudos",
           "color": "green",
-          "note": "ran 8h ago",
-          "age_hours": 7.5
+          "note": "8h ago",
+          "age_hours": 7.7
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "ran 5m ago",
-          "age_hours": 0.1
+          "note": "9m ago",
+          "age_hours": 0.2
         },
         {
           "label": "strava-friends-feed",

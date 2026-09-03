@@ -4,9 +4,12 @@ check.py -- probe every service / credential / launchd agent this machine
 depends on and emit a SANITIZED status file for the GitHub Pages dashboard.
 
 Rule: an entry is GREEN only if it has been refreshed within the last 24h
-(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale) are
-judged by a health check instead. Intentionally-off agents are marked so
-the page can dim them.
+(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale, the Pi
+clock) are judged by a health check instead. Intentionally-off entries are
+marked so the page can dim them.
+
+Green rows carry a terse note (just the age, or nothing). Red rows stay
+verbose so the reason is obvious.
 
 Sanitization: the JSON written to docs/status.json contains only a label,
 a colour, a short generic note, and a rounded age. No file paths, e-mail
@@ -43,21 +46,20 @@ def newest_age(*paths):
 def rel(h):
     if h is None:
         return "never"
-    if h < 0.03:
-        return "just now"
     if h < 1:
-        return f"{int(h * 60)}m ago"
+        return f"{max(1, int(round(h * 60)))}m ago"
     if h < 48:
         return f"{int(round(h))}h ago"
     return f"{int(round(h / 24))}d ago"
 
 
-def by_age(h, verb="refreshed"):
+def fresh(h, verb="refreshed"):
+    """(colour, terse-or-verbose note) from freshness alone."""
     if h is None:
         return "red", "no data found"
     if h < CUTOFF_H:
-        return "green", f"{verb} {rel(h)}"
-    return "red", f"last {verb.split()[0]} {rel(h)}"
+        return "green", rel(h)                     # terse
+    return "red", f"last {verb} {rel(h)}"          # verbose
 
 
 def run(cmd, timeout=90):
@@ -109,8 +111,11 @@ try:
         if label.lower() in ("gmail", "google calendar", "google drive"):
             label += " (MCP)"
         s = status_part.lower()
-        if "connected" in s and "not" not in s:
-            services.append(item(label, "green", "connected"))
+        if "pitchbook" in label.lower():
+            services.append(item(label, "red", "not in use right now",
+                                 intentional=True))
+        elif "connected" in s and "not" not in s:
+            services.append(item(label, "green", ""))          # terse
         elif "auth" in s:
             services.append(item(label, "red", "needs authentication"))
         else:
@@ -127,13 +132,38 @@ try:
     if state == "Running" and online:
         peers = len(j.get("Peer") or {})
         services.append(item("Tailscale", "green",
-                             f"connected · {peers} peer" + ("s" if peers != 1 else "")))
+                             f"{peers} peer" + ("s" if peers != 1 else "")))
     elif state == "Running":
         services.append(item("Tailscale", "red", "running but self offline"))
     else:
         services.append(item("Tailscale", "red", f"backend {state or 'stopped'}"))
 except Exception as e:  # noqa: BLE001
     services.append(item("Tailscale", "red", f"not reachable: {type(e).__name__}"))
+
+
+# ------------------------------------------------- Pi RGB-matrix clock ----
+# Physical 64x64 LED matrix clock on the Raspberry Pi (led-clock.service).
+# Reach it over the LAN first, then Tailscale; SSH key is passphrase-free.
+def clock_status():
+    cmd = "systemctl is-active led-clock.service"
+    for host in ("pi-lan", "pi"):
+        try:
+            r = subprocess.run(
+                ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=12",
+                 "-o", "StrictHostKeyChecking=accept-new", host, cmd],
+                capture_output=True, text=True, timeout=25,
+            )
+        except Exception:
+            continue
+        out = (r.stdout or "").strip()
+        if r.returncode == 0 and out == "active":
+            return item("Clock display", "green", "")
+        if out:                       # reachable, some other unit state
+            return item("Clock display", "red", f"led-clock {out}")
+    return item("Clock display", "red", "Pi unreachable")
+
+
+services.append(clock_status())
 
 
 # --------------------------------------------------- gws CLI e-mail ----
@@ -148,7 +178,7 @@ for label, d in [
         services.append(item(label, "red", "credentials missing — re-auth"))
         continue
     h = newest_age(cred, os.path.join(d, "token_cache.json"))
-    c, note = by_age(h, "token refreshed")
+    c, note = fresh(h, "token refresh")
     services.append(item(label, c, note, h))
 
 
@@ -160,7 +190,7 @@ for label, p in [
     ("Garmin", "~/garmin-sync/.garmintokens/garmin_tokens.json"),
 ]:
     h = age_hours(p)
-    c, note = by_age(h, "token refreshed")
+    c, note = fresh(h, "token refresh")
     services.append(item(label, c, note, h))
 
 
@@ -169,9 +199,10 @@ digest_log = "~/Library/Logs/checkin-digest.log"
 for label in ("ntfy push", "iMessage notifier"):
     h = age_hours(digest_log)
     if h is not None and h < CUTOFF_H:
-        services.append(item(label, "green", f"via check-in digest {rel(h)}", h))
+        services.append(item(label, "green", rel(h), h))
     else:
-        services.append(item(label, "red", f"no digest run in {CUTOFF_H}h ({rel(h)})", h))
+        services.append(item(label, "red",
+                             f"no check-in digest in {CUTOFF_H}h ({rel(h)})", h))
 
 
 # --------------------------------------------------------- WhatsApp ----
@@ -181,42 +212,42 @@ h = age_hours(wa)
 if h is None:
     services.append(item("WhatsApp (local DB)", "red", "Desktop DB not found"))
 elif h < CUTOFF_H:
-    services.append(item("WhatsApp (local DB)", "green", f"Desktop synced {rel(h)}", h))
+    services.append(item("WhatsApp (local DB)", "green", rel(h), h))
 else:
     services.append(item("WhatsApp (local DB)", "red",
                          f"Desktop not syncing — DB {rel(h)}", h))
 
 
 # --------------------------------------------------- launchd agents ----
-# (label, plist label, log path, schedule_only)
-# schedule_only agents fire less often than daily -- judge them by whether
-# they're loaded and last exited cleanly, not by 24h freshness.
+# (label, plist label, log path, schedule_note | False)
+# an agent with a schedule_note fires less than daily -- judge it by whether
+# it's loaded and last exited cleanly, not by 24h freshness.
 AGENTS = [
     ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/launchd.log", False),
     ("checkin-digest", "com.uttam.checkin-digest",
      "~/Library/Logs/checkin-digest.log", False),
     ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
-     "~/Library/Logs/import-downloads-to-photos.log", "runs Mon & Thu 23:00"),
+     "~/Library/Logs/import-downloads-to-photos.log", "Mon & Thu 23:00"),
     ("strava-kudos", "com.uttam408.strava-kudos",
      "~/Library/Mobile Documents/com~apple~CloudDocs/strava-friends-feed/kudos.log",
      False),
     ("connector-dashboard", "com.uttam.connector-dashboard",
      "~/Library/Logs/connector-dashboard.log", False),
 ]
-for label, plist_label, log, sched_only in AGENTS:
+for label, plist_label, log, sched_note in AGENTS:
     loaded, last_exit = agent_state(plist_label)
     if not loaded:
         agents.append(item(label, "red", "not loaded"))
         continue
-    if sched_only:
+    if sched_note:
         if last_exit in (None, 0):
-            agents.append(item(label, "green", f"loaded · {sched_only}"))
+            agents.append(item(label, "green", sched_note))
         else:
             agents.append(item(label, "red", f"last run failed (exit {last_exit})"))
         continue
     h = age_hours(log)
     if h is not None and h < CUTOFF_H:
-        agents.append(item(label, "green", f"ran {rel(h)}", h))
+        agents.append(item(label, "green", rel(h), h))
     else:
         agents.append(item(label, "red", f"no run in {CUTOFF_H}h ({rel(h)})", h))
 
