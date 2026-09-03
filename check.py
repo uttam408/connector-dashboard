@@ -232,6 +232,9 @@ for label, plist_label, log, sched_note in AGENTS:
     else:
         agents.append(item(label, "red", f"no run in {CUTOFF_H}h ({rel(h)})", h))
 
+# not built yet -- placeholder to keep it on the radar
+agents.append(item("WRTCbot", "red", "not set up — weekly run email still manual"))
+
 agents.append(item("strava-friends-feed", "red",
                    "disabled — replaced by strava-kudos", intentional=True))
 agents.append(item("battery.plist", "red",

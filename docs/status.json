@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:15:10Z",
+  "generated": "2026-09-03T21:43:03Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -33,8 +33,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "3m ago",
-          "age_hours": 0.1
+          "note": "31m ago",
+          "age_hours": 0.5
         },
         {
           "label": "Wharton Gmail (CLI)",
@@ -45,49 +45,49 @@
           "label": "Secondary Gmail (CLI)",
           "color": "red",
           "note": "last token refresh 28d ago",
-          "age_hours": 677.8
+          "age_hours": 678.3
         },
         {
           "label": "Whoop (official API)",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.7
+          "age_hours": 8.2
         },
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "50m ago",
-          "age_hours": 0.8
+          "note": "1h ago",
+          "age_hours": 1.3
         },
         {
           "label": "Strava",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.7
+          "age_hours": 8.2
         },
         {
           "label": "Garmin",
           "color": "red",
           "note": "last token refresh 2d ago",
-          "age_hours": 51.8
+          "age_hours": 52.3
         },
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "6h ago",
-          "age_hours": 6.1
+          "note": "7h ago",
+          "age_hours": 6.5
         },
         {
           "label": "iMessage",
           "color": "green",
-          "note": "6h ago",
-          "age_hours": 6.1
+          "note": "7h ago",
+          "age_hours": 6.5
         },
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "26m ago",
-          "age_hours": 0.4
+          "note": "54m ago",
+          "age_hours": 0.9
         },
         {
           "label": "PitchBook Premium",
@@ -103,14 +103,14 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "7h ago",
-          "age_hours": 7.1
+          "note": "8h ago",
+          "age_hours": 7.5
         },
         {
           "label": "checkin-digest",
           "color": "green",
-          "note": "6h ago",
-          "age_hours": 6.1
+          "note": "7h ago",
+          "age_hours": 6.5
         },
         {
           "label": "import-downloads-to-photos",
@@ -121,13 +121,18 @@
           "label": "strava-kudos",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.8
+          "age_hours": 8.3
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "3m ago",
-          "age_hours": 0.0
+          "note": "28m ago",
+          "age_hours": 0.5
+        },
+        {
+          "label": "WRTCbot",
+          "color": "red",
+          "note": "not set up \u2014 weekly run email still manual"
         },
         {
           "label": "strava-friends-feed",
