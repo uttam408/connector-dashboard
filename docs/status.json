@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:14:53Z",
+  "generated": "2026-09-03T21:15:10Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -34,7 +34,7 @@
           "label": "Personal Gmail (CLI)",
           "color": "green",
           "note": "3m ago",
-          "age_hours": 0.0
+          "age_hours": 0.1
         },
         {
           "label": "Wharton Gmail (CLI)",
