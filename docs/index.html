@@ -27,7 +27,6 @@
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
           overflow: hidden; text-overflow: ellipsis; }
   li.off { opacity: .4; }
-  footer { color: var(--dim); font-size: 12px; margin-top: 34px; }
   .err { color: #d1343b; }
 </style>
 </head>
@@ -36,7 +35,6 @@
   <h1>infra status</h1>
   <div class="meta" id="meta">loading…</div>
   <div id="body"></div>
-  <footer id="foot"></footer>
 </main>
 <script>
 const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}" };
@@ -74,8 +72,6 @@ async function load() {
     body.appendChild(h2);
     body.appendChild(ul);
   }
-  document.getElementById("foot").textContent =
-    `🟩 only if refreshed within ${d.cutoff_hours}h · faded = intentionally off · regenerated daily 05:00`;
 }
 load();
 setInterval(load, 30 * 60 * 1000);

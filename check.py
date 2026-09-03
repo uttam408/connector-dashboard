@@ -15,6 +15,7 @@ addresses, ntfy topics, contact names, or message counts ever leave here.
 
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -66,12 +67,16 @@ def run(cmd, timeout=90):
     )
 
 
-def agent_loaded(label):
+def agent_state(label):
+    """(loaded, last_exit_code) -- last_exit_code is None if it never exited."""
     try:
         r = run(["launchctl", "print", f"gui/{os.getuid()}/{label}"], timeout=15)
-        return r.returncode == 0
     except Exception:
-        return False
+        return False, None
+    if r.returncode != 0:
+        return False, None
+    m = re.search(r"last exit code\s*=\s*(\d+)", r.stdout)
+    return True, (int(m.group(1)) if m else None)
 
 
 def item(label, color, note, h=None, intentional=False):
@@ -183,20 +188,31 @@ else:
 
 
 # --------------------------------------------------- launchd agents ----
+# (label, plist label, log path, schedule_only)
+# schedule_only agents fire less often than daily -- judge them by whether
+# they're loaded and last exited cleanly, not by 24h freshness.
 AGENTS = [
-    ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/launchd.log"),
+    ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/launchd.log", False),
     ("checkin-digest", "com.uttam.checkin-digest",
-     "~/Library/Logs/checkin-digest.log"),
+     "~/Library/Logs/checkin-digest.log", False),
     ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
-     "~/Library/Logs/import-downloads-to-photos.log"),
+     "~/Library/Logs/import-downloads-to-photos.log", "runs Mon & Thu 23:00"),
     ("strava-kudos", "com.uttam408.strava-kudos",
-     "~/Library/Mobile Documents/com~apple~CloudDocs/strava-friends-feed/kudos.log"),
+     "~/Library/Mobile Documents/com~apple~CloudDocs/strava-friends-feed/kudos.log",
+     False),
     ("connector-dashboard", "com.uttam.connector-dashboard",
-     "~/Library/Logs/connector-dashboard.log"),
+     "~/Library/Logs/connector-dashboard.log", False),
 ]
-for label, plist_label, log in AGENTS:
-    if not agent_loaded(plist_label):
+for label, plist_label, log, sched_only in AGENTS:
+    loaded, last_exit = agent_state(plist_label)
+    if not loaded:
         agents.append(item(label, "red", "not loaded"))
+        continue
+    if sched_only:
+        if last_exit in (None, 0):
+            agents.append(item(label, "green", f"loaded · {sched_only}"))
+        else:
+            agents.append(item(label, "red", f"last run failed (exit {last_exit})"))
         continue
     h = age_hours(log)
     if h is not None and h < CUTOFF_H:

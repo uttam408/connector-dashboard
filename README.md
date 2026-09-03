@@ -23,8 +23,10 @@ APIs, notifications, WhatsApp) and **agents** (launchd jobs).
 An entry is **green** only if its underlying credential / data / log was
 refreshed within the last **24 h** (`CUTOFF_H` in `check.py`). Otherwise
 **red**. Live daemons (MCP connectors via `claude mcp list`, Tailscale via
-`tailscale status`) are judged by a health check. Two intentionally-disabled
-agents (`strava-friends-feed`, `battery.plist`) are shown dimmed.
+`tailscale status`) are judged by a health check. Agents that fire less than
+daily (`import-downloads-to-photos`) are green if loaded and last exited
+cleanly. Two intentionally-disabled agents (`strava-friends-feed`,
+`battery.plist`) are shown dimmed.
 
 ### What is published
 
