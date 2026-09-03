@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:10:58Z",
+  "generated": "2026-09-03T21:12:15Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -32,8 +32,9 @@
         },
         {
           "label": "Personal Gmail (CLI)",
-          "color": "red",
-          "note": "credentials missing \u2014 re-auth"
+          "color": "green",
+          "note": "1m ago",
+          "age_hours": 0.0
         },
         {
           "label": "Wharton Gmail (CLI)",
@@ -44,7 +45,7 @@
           "label": "Secondary Gmail (CLI)",
           "color": "red",
           "note": "last token refresh 28d ago",
-          "age_hours": 677.7
+          "age_hours": 677.8
         },
         {
           "label": "Whoop (official API)",
@@ -55,7 +56,7 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "46m ago",
+          "note": "47m ago",
           "age_hours": 0.8
         },
         {
@@ -85,7 +86,7 @@
         {
           "label": "WhatsApp (local DB)",
           "color": "green",
-          "note": "22m ago",
+          "note": "23m ago",
           "age_hours": 0.4
         },
         {
@@ -125,8 +126,8 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "4m ago",
-          "age_hours": 0.1
+          "note": "1m ago",
+          "age_hours": 0.0
         },
         {
           "label": "strava-friends-feed",
