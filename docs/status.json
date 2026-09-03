@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T20:56:02Z",
+  "generated": "2026-09-03T20:56:20Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -60,7 +60,7 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "token refreshed 30m ago",
+          "note": "token refreshed 31m ago",
           "age_hours": 0.5
         },
         {
@@ -79,13 +79,13 @@
           "label": "ntfy push",
           "color": "green",
           "note": "via check-in digest 6h ago",
-          "age_hours": 5.7
+          "age_hours": 5.8
         },
         {
           "label": "iMessage notifier",
           "color": "green",
           "note": "via check-in digest 6h ago",
-          "age_hours": 5.7
+          "age_hours": 5.8
         },
         {
           "label": "WhatsApp (local DB)",
@@ -108,7 +108,7 @@
           "label": "checkin-digest",
           "color": "green",
           "note": "ran 6h ago",
-          "age_hours": 5.7
+          "age_hours": 5.8
         },
         {
           "label": "import-downloads-to-photos",
