@@ -5,7 +5,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-export PATH="/Users/uttam/.local/bin:/Users/uttam/.local/node/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/Users/uttam/.local/bin:/Users/uttam/.local/node/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export HOME="/Users/uttam"
 
 /usr/bin/python3 check.py

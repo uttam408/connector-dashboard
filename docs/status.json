@@ -1,19 +1,14 @@
 {
-  "generated": "2026-09-03T20:41:38Z",
+  "generated": "2026-09-03T20:49:48Z",
   "cutoff_hours": 24,
-  "summary": {
-    "green": 14,
-    "red": 6,
-    "total": 20
-  },
-  "groups": [
+  "sections": [
     {
-      "name": "Claude.ai MCP connectors",
+      "name": "services",
       "items": [
         {
-          "label": "Google Drive",
+          "label": "Google Drive (MCP)",
           "color": "green",
-          "note": "connected (live check)"
+          "note": "connected"
         },
         {
           "label": "PitchBook Premium",
@@ -21,143 +16,128 @@
           "note": "needs authentication"
         },
         {
-          "label": "Google Calendar",
+          "label": "Google Calendar (MCP)",
           "color": "green",
-          "note": "connected (live check)"
+          "note": "connected"
         },
         {
-          "label": "Gmail",
+          "label": "Gmail (MCP)",
           "color": "green",
-          "note": "connected (live check)"
+          "note": "connected"
         },
         {
           "label": "Playwright",
           "color": "green",
-          "note": "connected (live check)"
-        }
-      ]
-    },
-    {
-      "name": "CLI e-mail access (gws)",
-      "items": [
+          "note": "connected"
+        },
+        {
+          "label": "Tailscale",
+          "color": "green",
+          "note": "connected \u00b7 1 peer"
+        },
         {
           "label": "Personal Gmail (CLI)",
           "color": "red",
-          "note": "credentials missing -- re-auth needed"
+          "note": "credentials missing \u2014 re-auth"
         },
         {
           "label": "Wharton Gmail (CLI)",
           "color": "red",
-          "note": "credentials missing -- re-auth needed"
+          "note": "credentials missing \u2014 re-auth"
         },
         {
           "label": "Secondary Gmail (CLI)",
           "color": "red",
           "note": "last token 28d ago",
-          "age_hours": 677.2
-        }
-      ]
-    },
-    {
-      "name": "Health data tools",
-      "items": [
+          "age_hours": 677.4
+        },
         {
           "label": "Whoop (official API)",
           "color": "green",
           "note": "token refreshed 7h ago",
-          "age_hours": 7.1
+          "age_hours": 7.3
         },
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "token refreshed 16m ago",
-          "age_hours": 0.3
+          "note": "token refreshed 24m ago",
+          "age_hours": 0.4
         },
         {
           "label": "Strava",
           "color": "green",
           "note": "token refreshed 7h ago",
-          "age_hours": 7.1
+          "age_hours": 7.3
         },
         {
           "label": "Garmin",
           "color": "red",
           "note": "last token 2d ago",
-          "age_hours": 51.2
-        }
-      ]
-    },
-    {
-      "name": "Notification delivery",
-      "items": [
+          "age_hours": 51.4
+        },
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "delivered via check-in digest 6h ago",
-          "age_hours": 5.5
+          "note": "via check-in digest 6h ago",
+          "age_hours": 5.6
         },
         {
           "label": "iMessage notifier",
           "color": "green",
-          "note": "delivered via check-in digest 6h ago",
-          "age_hours": 5.5
-        }
-      ]
-    },
-    {
-      "name": "WhatsApp",
-      "items": [
+          "note": "via check-in digest 6h ago",
+          "age_hours": 5.6
+        },
         {
           "label": "WhatsApp (local DB)",
           "color": "green",
-          "note": "Desktop synced 7m ago",
-          "age_hours": 0.1
+          "note": "Desktop synced just now",
+          "age_hours": 0.0
         }
       ]
     },
     {
-      "name": "launchd agents",
+      "name": "agents",
       "items": [
         {
           "label": "morning-checkin",
           "color": "green",
           "note": "ran 7h ago",
-          "age_hours": 6.5
+          "age_hours": 6.6
         },
         {
           "label": "checkin-digest",
           "color": "green",
           "note": "ran 6h ago",
-          "age_hours": 5.5
+          "age_hours": 5.6
         },
         {
           "label": "import-downloads-to-photos",
           "color": "red",
           "note": "no run in 24h (3d ago)",
-          "age_hours": 79.7
+          "age_hours": 79.8
         },
         {
           "label": "strava-kudos",
           "color": "green",
           "note": "ran 7h ago",
-          "age_hours": 7.3
+          "age_hours": 7.4
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "ran 0m ago",
-          "age_hours": 0.0
+          "note": "ran 8m ago",
+          "age_hours": 0.1
         },
         {
           "label": "strava-friends-feed",
           "color": "red",
-          "note": "disabled -- replaced by strava-kudos",
+          "note": "disabled \u2014 replaced by strava-kudos",
           "intentional": true
         },
         {
           "label": "battery.plist",
           "color": "red",
-          "note": "not loaded -- app self-manages",
+          "note": "not loaded \u2014 app self-manages",
           "intentional": true
         }
       ]

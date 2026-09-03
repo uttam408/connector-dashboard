@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 """
-check.py -- probe every connector / credential / launchd agent this machine
-depends on and emit a SANITIZED status file for the public GitHub Pages
-dashboard.
+check.py -- probe every service / credential / launchd agent this machine
+depends on and emit a SANITIZED status file for the GitHub Pages dashboard.
 
-Rule: a source is GREEN only if it has been refreshed within the last 24h
-(CUTOFF_H). Otherwise RED. A handful of entries are judged by liveness
-(MCP health check) or are intentionally-off (disabled agents) -- those are
-marked so they don't pollute the score.
+Rule: an entry is GREEN only if it has been refreshed within the last 24h
+(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale) are
+judged by a health check instead. Intentionally-off agents are marked so
+the page can dim them.
 
 Sanitization: the JSON written to docs/status.json contains only a label,
 a colour, a short generic note, and a rounded age. No file paths, e-mail
-addresses, ntfy topics, contact names, or message counts ever leave this
-script.
+addresses, ntfy topics, contact names, or message counts ever leave here.
 """
 
 import json
@@ -24,13 +22,12 @@ from pathlib import Path
 CUTOFF_H = 24
 HOME = Path.home()
 OUT = Path(__file__).resolve().parent / "docs" / "status.json"
-HIST = Path(__file__).resolve().parent / "docs" / "history.jsonl"
 NOW = time.time()
+PATH = os.environ.get("PATH", "") + f":{HOME}/.local/bin:/opt/homebrew/bin"
 
 
 # ---------------------------------------------------------------- helpers ----
 def age_hours(path):
-    """Hours since *path* was last modified, or None if it doesn't exist."""
     try:
         return (NOW - os.path.getmtime(os.path.expanduser(path))) / 3600.0
     except OSError:
@@ -45,6 +42,8 @@ def newest_age(*paths):
 def rel(h):
     if h is None:
         return "never"
+    if h < 0.03:
+        return "just now"
     if h < 1:
         return f"{int(h * 60)}m ago"
     if h < 48:
@@ -52,32 +51,27 @@ def rel(h):
     return f"{int(round(h / 24))}d ago"
 
 
-def by_age(h, ok_note="refreshed"):
-    """Colour purely from freshness."""
+def by_age(h, verb="refreshed"):
     if h is None:
         return "red", "no data found"
     if h < CUTOFF_H:
-        return "green", f"{ok_note} {rel(h)}"
-    return "red", f"last {ok_note.split()[0]} {rel(h)}"
+        return "green", f"{verb} {rel(h)}"
+    return "red", f"last {verb.split()[0]} {rel(h)}"
+
+
+def run(cmd, timeout=90):
+    return subprocess.run(
+        cmd, capture_output=True, text=True, timeout=timeout,
+        env={**os.environ, "PATH": PATH},
+    )
 
 
 def agent_loaded(label):
     try:
-        uid = os.getuid()
-        r = subprocess.run(
-            ["launchctl", "print", f"gui/{uid}/{label}"],
-            capture_output=True, text=True, timeout=15,
-        )
+        r = run(["launchctl", "print", f"gui/{os.getuid()}/{label}"], timeout=15)
         return r.returncode == 0
     except Exception:
         return False
-
-
-groups = []
-
-
-def group(name, items):
-    groups.append({"name": name, "items": items})
 
 
 def item(label, color, note, h=None, intentional=False):
@@ -89,47 +83,55 @@ def item(label, color, note, h=None, intentional=False):
     return d
 
 
-# ------------------------------------------------ 1. claude.ai MCP connectors ----
-def check_mcp():
-    items = []
-    try:
-        r = subprocess.run(
-            ["claude", "mcp", "list"],
-            capture_output=True, text=True, timeout=90,
-            env={**os.environ, "PATH": os.environ.get("PATH", "") +
-                 f":{HOME}/.local/bin"},
-        )
-        text = r.stdout
-    except Exception as e:  # noqa: BLE001
-        return [item("MCP check", "red", f"could not run: {type(e).__name__}")]
+services = []
+agents = []
 
+
+# --------------------------------------------- Claude.ai MCP connectors ----
+try:
+    text = run(["claude", "mcp", "list"]).stdout
     for line in text.splitlines():
         line = line.strip()
         if " - " not in line or ":" not in line:
             continue
         name_part, status_part = line.rsplit(" - ", 1)
         segs = name_part.split(":")
-        # "plugin:playwright:playwright: npx ..." -> "playwright"
         label = segs[2].strip() if segs[0].strip() == "plugin" and len(segs) > 2 \
             else segs[0].strip()
         label = label.replace("claude.ai ", "").strip()
         if label:
             label = label[0].upper() + label[1:]
+        if label.lower() in ("gmail", "google calendar", "google drive"):
+            label += " (MCP)"
         s = status_part.lower()
         if "connected" in s and "not" not in s:
-            items.append(item(label, "green", "connected (live check)"))
+            services.append(item(label, "green", "connected"))
         elif "auth" in s:
-            items.append(item(label, "red", "needs authentication"))
+            services.append(item(label, "red", "needs authentication"))
         else:
-            items.append(item(label, "red", "unavailable"))
-    return items or [item("MCP check", "red", "no connectors listed")]
+            services.append(item(label, "red", "unavailable"))
+except Exception as e:  # noqa: BLE001
+    services.append(item("MCP check", "red", f"could not run: {type(e).__name__}"))
 
 
-group("Claude.ai MCP connectors", check_mcp())
+# ------------------------------------------------------------ Tailscale ----
+try:
+    j = json.loads(run(["tailscale", "status", "--json"], timeout=20).stdout)
+    state = j.get("BackendState")
+    online = (j.get("Self") or {}).get("Online")
+    if state == "Running" and online:
+        peers = len(j.get("Peer") or {})
+        services.append(item("Tailscale", "green",
+                             f"connected · {peers} peer" + ("s" if peers != 1 else "")))
+    elif state == "Running":
+        services.append(item("Tailscale", "red", "running but self offline"))
+    else:
+        services.append(item("Tailscale", "red", f"backend {state or 'stopped'}"))
+except Exception as e:  # noqa: BLE001
+    services.append(item("Tailscale", "red", f"not reachable: {type(e).__name__}"))
 
 
-# ---------------------------------------------------- 2. gws CLI e-mail ----
-gws_items = []
+# --------------------------------------------------- gws CLI e-mail ----
 for label, d in [
     ("Personal Gmail (CLI)", "~/.config/gws"),
     ("Wharton Gmail (CLI)", "~/.config/gws-wharton"),
@@ -138,16 +140,14 @@ for label, d in [
     d = os.path.expanduser(d)
     cred = os.path.join(d, "credentials.enc")
     if not os.path.exists(cred):
-        gws_items.append(item(label, "red", "credentials missing -- re-auth needed"))
+        services.append(item(label, "red", "credentials missing — re-auth"))
         continue
     h = newest_age(cred, os.path.join(d, "token_cache.json"))
     c, note = by_age(h, "token refreshed")
-    gws_items.append(item(label, c, note, h))
-group("CLI e-mail access (gws)", gws_items)
+    services.append(item(label, c, note, h))
 
 
-# ------------------------------------------------- 3. health data tools ----
-health_items = []
+# ------------------------------------------------- health data tools ----
 for label, p in [
     ("Whoop (official API)", "~/whoop-sync/tokens.json"),
     ("Whoop (internal API)", "~/whoop-unofficial/tokens.json"),
@@ -156,40 +156,33 @@ for label, p in [
 ]:
     h = age_hours(p)
     c, note = by_age(h, "token refreshed")
-    health_items.append(item(label, c, note, h))
-group("Health data tools", health_items)
+    services.append(item(label, c, note, h))
 
 
-# ---------------------------------------------- 4. notification delivery ----
+# ---------------------------------------------- notification delivery ----
 digest_log = "~/Library/Logs/checkin-digest.log"
-notif_items = []
 for label in ("ntfy push", "iMessage notifier"):
     h = age_hours(digest_log)
     if h is not None and h < CUTOFF_H:
-        notif_items.append(item(label, "green",
-                                f"delivered via check-in digest {rel(h)}", h))
+        services.append(item(label, "green", f"via check-in digest {rel(h)}", h))
     else:
-        notif_items.append(item(label, "red",
-                                f"no digest run in {CUTOFF_H}h ({rel(h)})", h))
-group("Notification delivery", notif_items)
+        services.append(item(label, "red", f"no digest run in {CUTOFF_H}h ({rel(h)})", h))
 
 
-# --------------------------------------------------------- 5. WhatsApp ----
+# --------------------------------------------------------- WhatsApp ----
 wa = ("~/Library/Group Containers/group.net.whatsapp.WhatsApp.shared/"
       "ChatStorage.sqlite")
 h = age_hours(wa)
 if h is None:
-    wa_item = item("WhatsApp (local DB)", "red", "WhatsApp Desktop DB not found")
+    services.append(item("WhatsApp (local DB)", "red", "Desktop DB not found"))
 elif h < CUTOFF_H:
-    wa_item = item("WhatsApp (local DB)", "green", f"Desktop synced {rel(h)}", h)
+    services.append(item("WhatsApp (local DB)", "green", f"Desktop synced {rel(h)}", h))
 else:
-    wa_item = item("WhatsApp (local DB)", "red",
-                   f"Desktop not syncing -- DB {rel(h)}; open the app", h)
-group("WhatsApp", [wa_item])
+    services.append(item("WhatsApp (local DB)", "red",
+                         f"Desktop not syncing — DB {rel(h)}", h))
 
 
-# --------------------------------------------------- 6. launchd agents ----
-agent_items = []
+# --------------------------------------------------- launchd agents ----
 AGENTS = [
     ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/launchd.log"),
     ("checkin-digest", "com.uttam.checkin-digest",
@@ -203,39 +196,33 @@ AGENTS = [
 ]
 for label, plist_label, log in AGENTS:
     if not agent_loaded(plist_label):
-        agent_items.append(item(label, "red", "not loaded"))
+        agents.append(item(label, "red", "not loaded"))
         continue
     h = age_hours(log)
     if h is not None and h < CUTOFF_H:
-        agent_items.append(item(label, "green", f"ran {rel(h)}", h))
+        agents.append(item(label, "green", f"ran {rel(h)}", h))
     else:
-        agent_items.append(item(label, "red",
-                                f"no run in {CUTOFF_H}h ({rel(h)})", h))
+        agents.append(item(label, "red", f"no run in {CUTOFF_H}h ({rel(h)})", h))
 
-agent_items.append(item("strava-friends-feed", "red",
-                        "disabled -- replaced by strava-kudos", intentional=True))
-agent_items.append(item("battery.plist", "red",
-                        "not loaded -- app self-manages", intentional=True))
-group("launchd agents", agent_items)
+agents.append(item("strava-friends-feed", "red",
+                   "disabled — replaced by strava-kudos", intentional=True))
+agents.append(item("battery.plist", "red",
+                   "not loaded — app self-manages", intentional=True))
 
 
 # ------------------------------------------------------------- write ----
-scored = [it for g in groups for it in g["items"] if not it.get("intentional")]
-green = sum(1 for it in scored if it["color"] == "green")
-red = sum(1 for it in scored if it["color"] == "red")
-
 payload = {
     "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(NOW)),
     "cutoff_hours": CUTOFF_H,
-    "summary": {"green": green, "red": red, "total": green + red},
-    "groups": groups,
+    "sections": [
+        {"name": "services", "items": services},
+        {"name": "agents", "items": agents},
+    ],
 }
-
 OUT.write_text(json.dumps(payload, indent=2) + "\n")
 
-row = json.dumps({"t": payload["generated"], "green": green, "red": red})
-lines = HIST.read_text().splitlines() if HIST.exists() else []
-lines.append(row)
-HIST.write_text("\n".join(lines[-120:]) + "\n")
-
-print(f"{green} green / {red} red  ->  {OUT}")
+g = sum(1 for s in payload["sections"] for i in s["items"]
+        if i["color"] == "green" and not i.get("intentional"))
+r = sum(1 for s in payload["sections"] for i in s["items"]
+        if i["color"] == "red" and not i.get("intentional"))
+print(f"{g} green / {r} red  ->  {OUT}")
