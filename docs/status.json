@@ -1,9 +1,9 @@
 {
-  "generated": "2026-09-03T20:39:39Z",
+  "generated": "2026-09-03T20:41:38Z",
   "cutoff_hours": 24,
   "summary": {
-    "green": 13,
-    "red": 7,
+    "green": 14,
+    "red": 6,
     "total": 20
   },
   "groups": [
@@ -70,8 +70,8 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "token refreshed 14m ago",
-          "age_hours": 0.2
+          "note": "token refreshed 16m ago",
+          "age_hours": 0.3
         },
         {
           "label": "Strava",
@@ -93,13 +93,13 @@
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "delivered via check-in digest 5h ago",
+          "note": "delivered via check-in digest 6h ago",
           "age_hours": 5.5
         },
         {
           "label": "iMessage notifier",
           "color": "green",
-          "note": "delivered via check-in digest 5h ago",
+          "note": "delivered via check-in digest 6h ago",
           "age_hours": 5.5
         }
       ]
@@ -110,7 +110,7 @@
         {
           "label": "WhatsApp (local DB)",
           "color": "green",
-          "note": "Desktop synced 5m ago",
+          "note": "Desktop synced 7m ago",
           "age_hours": 0.1
         }
       ]
@@ -121,13 +121,13 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "ran 6h ago",
+          "note": "ran 7h ago",
           "age_hours": 6.5
         },
         {
           "label": "checkin-digest",
           "color": "green",
-          "note": "ran 5h ago",
+          "note": "ran 6h ago",
           "age_hours": 5.5
         },
         {
@@ -144,8 +144,9 @@
         },
         {
           "label": "connector-dashboard",
-          "color": "red",
-          "note": "not loaded"
+          "color": "green",
+          "note": "ran 0m ago",
+          "age_hours": 0.0
         },
         {
           "label": "strava-friends-feed",
