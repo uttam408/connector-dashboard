@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:06:29Z",
+  "generated": "2026-09-03T21:10:47Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -9,12 +9,6 @@
           "label": "Google Drive (MCP)",
           "color": "green",
           "note": ""
-        },
-        {
-          "label": "PitchBook Premium",
-          "color": "red",
-          "note": "not in use right now",
-          "intentional": true
         },
         {
           "label": "Google Calendar (MCP)",
@@ -37,11 +31,6 @@
           "note": "1 peer"
         },
         {
-          "label": "Clock display",
-          "color": "red",
-          "note": "Pi unreachable"
-        },
-        {
           "label": "Personal Gmail (CLI)",
           "color": "red",
           "note": "credentials missing \u2014 re-auth"
@@ -61,43 +50,49 @@
           "label": "Whoop (official API)",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.5
+          "age_hours": 7.6
         },
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "41m ago",
-          "age_hours": 0.7
+          "note": "46m ago",
+          "age_hours": 0.8
         },
         {
           "label": "Strava",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.5
+          "age_hours": 7.6
         },
         {
           "label": "Garmin",
           "color": "red",
           "note": "last token refresh 2d ago",
-          "age_hours": 51.6
+          "age_hours": 51.7
         },
         {
           "label": "ntfy push",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 5.9
+          "age_hours": 6.0
         },
         {
           "label": "iMessage notifier",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 5.9
+          "age_hours": 6.0
         },
         {
           "label": "WhatsApp (local DB)",
           "color": "green",
-          "note": "17m ago",
-          "age_hours": 0.3
+          "note": "22m ago",
+          "age_hours": 0.4
+        },
+        {
+          "label": "PitchBook Premium",
+          "color": "red",
+          "note": "not in use right now",
+          "intentional": true
         }
       ]
     },
@@ -108,13 +103,13 @@
           "label": "morning-checkin",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 6.9
+          "age_hours": 7.0
         },
         {
           "label": "checkin-digest",
           "color": "green",
           "note": "6h ago",
-          "age_hours": 5.9
+          "age_hours": 6.0
         },
         {
           "label": "import-downloads-to-photos",
@@ -125,13 +120,13 @@
           "label": "strava-kudos",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.7
+          "age_hours": 7.8
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "10m ago",
-          "age_hours": 0.2
+          "note": "4m ago",
+          "age_hours": 0.1
         },
         {
           "label": "strava-friends-feed",

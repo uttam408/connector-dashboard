@@ -23,13 +23,16 @@ APIs, notifications, WhatsApp) and **agents** (launchd jobs).
 An entry is **green** only if its underlying credential / data / log was
 refreshed within the last **24 h** (`CUTOFF_H` in `check.py`). Otherwise
 **red**. Live daemons are judged by a health check instead: MCP connectors
-via `claude mcp list`, Tailscale via `tailscale status`, and the Pi RGB-matrix
-clock via `ssh pi-lan/pi systemctl is-active led-clock.service`. Agents that
-fire less than daily (`import-downloads-to-photos`) are green if loaded and
-last exited cleanly. Intentionally-off entries (`PitchBook Premium`,
-`strava-friends-feed`, `battery.plist`) are shown dimmed and excluded.
+via `claude mcp list`, Tailscale via `tailscale status`. Agents that fire
+less than daily (`import-downloads-to-photos`) are green if loaded and last
+exited cleanly. Intentionally-off entries (`PitchBook Premium`,
+`strava-friends-feed`, `battery.plist`) are dimmed, excluded from the count,
+and sink to the bottom of their section.
 
 Green rows show only their age (or nothing); red rows stay verbose.
+
+_(The Pi RGB-matrix clock check was removed — the `ssh … systemctl is-active`
+probe was too flaky. TODO: a reliable heartbeat.)_
 
 ### What is published
 
@@ -50,10 +53,9 @@ GitHub Pages: repo **Settings -> Pages -> Source: Deploy from a branch ->
 ## Checked sources
 
 **services:** Claude.ai MCP connectors (Drive, Calendar, Gmail, PitchBook,
-Playwright) &middot; Tailscale &middot; Pi RGB-matrix clock &middot; `gws` CLI
-e-mail accounts (personal / Wharton / secondary) &middot; Whoop (official +
-internal), Strava, Garmin tokens &middot; ntfy + iMessage delivery &middot;
-WhatsApp local DB freshness
+Playwright) &middot; Tailscale &middot; `gws` CLI e-mail accounts (personal /
+Wharton / secondary) &middot; Whoop (official + internal), Strava, Garmin
+tokens &middot; ntfy + iMessage delivery &middot; WhatsApp local DB freshness
 
 **agents:** morning-checkin, checkin-digest, import-downloads-to-photos,
 strava-kudos, this dashboard, plus the two disabled ones.

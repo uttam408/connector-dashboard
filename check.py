@@ -4,9 +4,9 @@ check.py -- probe every service / credential / launchd agent this machine
 depends on and emit a SANITIZED status file for the GitHub Pages dashboard.
 
 Rule: an entry is GREEN only if it has been refreshed within the last 24h
-(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale, the Pi
-clock) are judged by a health check instead. Intentionally-off entries are
-marked so the page can dim them.
+(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale) are
+judged by a health check instead. Intentionally-off entries are marked so
+the page can dim them, and sink to the bottom of their section.
 
 Green rows carry a terse note (just the age, or nothing). Red rows stay
 verbose so the reason is obvious.
@@ -141,29 +141,10 @@ except Exception as e:  # noqa: BLE001
     services.append(item("Tailscale", "red", f"not reachable: {type(e).__name__}"))
 
 
-# ------------------------------------------------- Pi RGB-matrix clock ----
-# Physical 64x64 LED matrix clock on the Raspberry Pi (led-clock.service).
-# Reach it over the LAN first, then Tailscale; SSH key is passphrase-free.
-def clock_status():
-    cmd = "systemctl is-active led-clock.service"
-    for host in ("pi-lan", "pi"):
-        try:
-            r = subprocess.run(
-                ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=12",
-                 "-o", "StrictHostKeyChecking=accept-new", host, cmd],
-                capture_output=True, text=True, timeout=25,
-            )
-        except Exception:
-            continue
-        out = (r.stdout or "").strip()
-        if r.returncode == 0 and out == "active":
-            return item("Clock display", "green", "")
-        if out:                       # reachable, some other unit state
-            return item("Clock display", "red", f"led-clock {out}")
-    return item("Clock display", "red", "Pi unreachable")
-
-
-services.append(clock_status())
+# TODO: Pi RGB-matrix clock (led-clock.service) -- the plain `ssh ...
+# systemctl is-active` probe was too flaky (LAN/Tailscale both time out
+# intermittently even while the clock is visibly running). Removed until
+# there's a reliable signal (e.g. the Pi POSTing a heartbeat somewhere).
 
 
 # --------------------------------------------------- gws CLI e-mail ----
@@ -255,6 +236,16 @@ agents.append(item("strava-friends-feed", "red",
                    "disabled — replaced by strava-kudos", intentional=True))
 agents.append(item("battery.plist", "red",
                    "not loaded — app self-manages", intentional=True))
+
+
+# dimmed / intentionally-off entries sink to the bottom of their section
+def sink(lst):
+    return ([i for i in lst if not i.get("intentional")] +
+            [i for i in lst if i.get("intentional")])
+
+
+services = sink(services)
+agents = sink(agents)
 
 
 # ------------------------------------------------------------- write ----
