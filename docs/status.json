@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03T21:43:22Z",
+  "generated": "2026-09-03T21:45:42Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -33,8 +33,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "31m ago",
-          "age_hours": 0.5
+          "note": "34m ago",
+          "age_hours": 0.6
         },
         {
           "label": "Wharton Gmail (CLI)",
@@ -75,18 +75,18 @@
           "label": "ntfy push",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 6.5
+          "age_hours": 6.6
         },
         {
           "label": "iMessage",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 6.5
+          "age_hours": 6.6
         },
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "54m ago",
+          "note": "57m ago",
           "age_hours": 0.9
         },
         {
@@ -104,13 +104,7 @@
           "label": "morning-checkin",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 7.5
-        },
-        {
-          "label": "checkin-digest",
-          "color": "green",
-          "note": "7h ago",
-          "age_hours": 6.5
+          "age_hours": 7.6
         },
         {
           "label": "import-downloads-to-photos",
@@ -121,18 +115,24 @@
           "label": "strava-kudos",
           "color": "green",
           "note": "8h ago",
-          "age_hours": 8.3
+          "age_hours": 8.4
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "28m ago",
-          "age_hours": 0.5
+          "note": "2m ago",
+          "age_hours": 0.0
         },
         {
           "label": "WRTCbot",
           "color": "red",
           "note": "not set up \u2014 weekly run email still manual"
+        },
+        {
+          "label": "checkin-digest",
+          "color": "red",
+          "note": "paused",
+          "intentional": true
         },
         {
           "label": "strava-friends-feed",

@@ -26,8 +26,8 @@ refreshed within the last **24 h** (`CUTOFF_H` in `check.py`). Otherwise
 via `claude mcp list`, Tailscale via `tailscale status`. Agents that fire
 less than daily (`import-downloads-to-photos`) are green if loaded and last
 exited cleanly. Intentionally-off entries (`PitchBook Premium`,
-`strava-friends-feed`, `battery.plist`) are dimmed, excluded from the count,
-and sink to the bottom of their section.
+`checkin-digest` (paused), `strava-friends-feed`, `battery.plist`) are
+dimmed, excluded from the count, and sink to the bottom of their section.
 
 Green rows show only their age (or nothing); red rows stay verbose.
 

@@ -176,14 +176,15 @@ for label, p in [
 
 
 # ---------------------------------------------- notification delivery ----
-digest_log = "~/Library/Logs/checkin-digest.log"
+# morning-checkin and (when not paused) checkin-digest both push via the
+# same ntfy + iMessage notifiers -- freshness = the most recent of the two.
+notif_h = newest_age("~/checkin/launchd.log", "~/Library/Logs/checkin-digest.log")
 for label in ("ntfy push", "iMessage"):
-    h = age_hours(digest_log)
-    if h is not None and h < CUTOFF_H:
-        services.append(item(label, "green", rel(h), h))
+    if notif_h is not None and notif_h < CUTOFF_H:
+        services.append(item(label, "green", rel(notif_h), notif_h))
     else:
         services.append(item(label, "red",
-                             f"no check-in digest in {CUTOFF_H}h ({rel(h)})", h))
+                             f"no check-in run in {CUTOFF_H}h ({rel(notif_h)})", notif_h))
 
 
 # --------------------------------------------------------- WhatsApp ----
@@ -215,8 +216,14 @@ AGENTS = [
     ("connector-dashboard", "com.uttam.connector-dashboard",
      "~/Library/Logs/connector-dashboard.log", False),
 ]
+# agents deliberately paused -- red, but dimmed and excluded from the count
+PAUSED = {"com.uttam.checkin-digest"}
+
 for label, plist_label, log, sched_note in AGENTS:
     loaded, last_exit = agent_state(plist_label)
+    if plist_label in PAUSED:
+        agents.append(item(label, "red", "paused", intentional=True))
+        continue
     if not loaded:
         agents.append(item(label, "red", "not loaded"))
         continue
