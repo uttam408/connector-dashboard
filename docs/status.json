@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-07T09:11:56Z",
+  "generated": "2026-09-08T09:10:27Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -22,8 +22,8 @@
         },
         {
           "label": "Playwright",
-          "color": "red",
-          "note": "unavailable"
+          "color": "green",
+          "note": ""
         },
         {
           "label": "Tailscale",
@@ -33,8 +33,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "red",
-          "note": "last token refresh 29h ago",
-          "age_hours": 29.1
+          "note": "last token refresh 2d ago",
+          "age_hours": 53.0
         },
         {
           "label": "Wharton Gmail (CLI)",
@@ -44,50 +44,50 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "red",
-          "note": "last token refresh 32d ago",
-          "age_hours": 761.8
+          "note": "last token refresh 33d ago",
+          "age_hours": 785.7
         },
         {
           "label": "Whoop (official API)",
           "color": "green",
           "note": "23h ago",
-          "age_hours": 22.9
+          "age_hours": 23.0
         },
         {
           "label": "Whoop (internal API)",
           "color": "red",
-          "note": "last token refresh 4d ago",
-          "age_hours": 84.8
+          "note": "last token refresh 5d ago",
+          "age_hours": 108.8
         },
         {
           "label": "Strava",
           "color": "green",
-          "note": "22h ago",
-          "age_hours": 22.2
+          "note": "23h ago",
+          "age_hours": 23.0
         },
         {
           "label": "Garmin",
           "color": "red",
-          "note": "last token refresh 6d ago",
-          "age_hours": 135.7
+          "note": "last token refresh 7d ago",
+          "age_hours": 159.7
         },
         {
           "label": "ntfy push",
           "color": "red",
-          "note": "no check-in run in 24h (4d ago)",
-          "age_hours": 90.0
+          "note": "no check-in run in 24h (5d ago)",
+          "age_hours": 114.0
         },
         {
           "label": "iMessage",
           "color": "red",
-          "note": "no check-in run in 24h (4d ago)",
-          "age_hours": 90.0
+          "note": "no check-in run in 24h (5d ago)",
+          "age_hours": 114.0
         },
         {
           "label": "WhatsApp",
           "color": "red",
-          "note": "Desktop not syncing \u2014 DB 2d ago",
-          "age_hours": 56.2
+          "note": "Desktop not syncing \u2014 DB 3d ago",
+          "age_hours": 80.1
         },
         {
           "label": "PitchBook Premium",
@@ -103,8 +103,8 @@
         {
           "label": "morning-checkin",
           "color": "red",
-          "note": "no run in 24h (4d ago)",
-          "age_hours": 91.0
+          "note": "no run in 24h (5d ago)",
+          "age_hours": 115.0
         },
         {
           "label": "import-downloads-to-photos",
@@ -114,14 +114,14 @@
         {
           "label": "strava-kudos",
           "color": "red",
-          "note": "no run in 24h (4d ago)",
-          "age_hours": 91.8
+          "note": "no run in 24h (5d ago)",
+          "age_hours": 115.8
         },
         {
           "label": "connector-dashboard",
-          "color": "red",
-          "note": "no run in 24h (24h ago)",
-          "age_hours": 24.2
+          "color": "green",
+          "note": "24h ago",
+          "age_hours": 23.9
         },
         {
           "label": "WRTCbot",
