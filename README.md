@@ -34,8 +34,8 @@ evidence of a problem. Whoop's **internal** API deliberately stays on the age
 rule: that endpoint has no refresh flow, so staleness there really does mean
 "go re-login".
 
-Agents that fire less than daily (`import-downloads-to-photos`,
-`strava-kudos`) are green if loaded and last exited cleanly. Intentionally-off entries (`PitchBook Premium`,
+Agents that fire less than daily (`import-downloads-to-photos`) are green if
+loaded and last exited cleanly. Intentionally-off entries (`PitchBook Premium`,
 `checkin-digest` (paused), `strava-friends-feed`, `battery.plist`) are
 dimmed, excluded from the count, and sink to the bottom of their section.
 

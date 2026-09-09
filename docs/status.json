@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:24:03Z",
+  "generated": "2026-09-09T17:28:15Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -69,8 +69,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "2m ago",
-          "age_hours": 0.0,
+          "note": "6m ago",
+          "age_hours": 0.1,
           "history": [
             "red",
             "green",
@@ -95,7 +95,7 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "4m ago",
+          "note": "9m ago",
           "age_hours": 0.1,
           "history": [
             "red",
@@ -109,7 +109,7 @@
           "label": "Whoop (official API)",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.4,
+          "age_hours": 7.5,
           "history": [
             "green",
             "green",
@@ -121,8 +121,8 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "7m ago",
-          "age_hours": 0.1,
+          "note": "12m ago",
+          "age_hours": 0.2,
           "history": [
             "red",
             "red",
@@ -135,7 +135,7 @@
           "label": "Strava",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.4,
+          "age_hours": 7.5,
           "history": [
             "green",
             "green",
@@ -160,7 +160,7 @@
           "label": "ntfy push",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.4,
+          "age_hours": 4.5,
           "history": [
             "red",
             "red",
@@ -173,7 +173,7 @@
           "label": "iMessage",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.4,
+          "age_hours": 4.5,
           "history": [
             "red",
             "red",
@@ -185,7 +185,7 @@
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "4m ago",
+          "note": "9m ago",
           "age_hours": 0.1,
           "history": [
             "green",
@@ -230,7 +230,7 @@
           "label": "morning-checkin",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.4,
+          "age_hours": 4.5,
           "history": [
             "red",
             "red",
@@ -254,7 +254,8 @@
         {
           "label": "strava-kudos",
           "color": "green",
-          "note": "Mon & Thu 23:00",
+          "note": "22m ago",
+          "age_hours": 0.4,
           "history": [
             "red",
             "red",
@@ -266,7 +267,7 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "3m ago",
+          "note": "4m ago",
           "age_hours": 0.1,
           "history": [
             "green",
