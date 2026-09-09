@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:23:48Z",
+  "generated": "2026-09-09T17:24:03Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -83,7 +83,7 @@
           "label": "Wharton Gmail (CLI)",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 3.1,
+          "age_hours": 3.2,
           "history": [
             "red",
             "red",
