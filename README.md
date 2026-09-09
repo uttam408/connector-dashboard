@@ -32,16 +32,19 @@ dimmed, excluded from the count, and sink to the bottom of their section.
 
 Green rows show only their age (or nothing); red rows stay verbose.
 
-### 7-day lookback
+### 5-day lookback
 
-Each row leads with a strip of seven squares, oldest → today; the rightmost
+Each row leads with a strip of five squares, oldest → today; the rightmost
 square is the current state. `docs/history.json` keeps one record per
-calendar day (`{"YYYY-MM-DD": {label: colour}}`, last run of the day wins,
-pruned to 21 days) and `check.py` folds the last 7 into each item as
-`history`, so the page needs no extra fetch. `⬜` means no record for that
-day — the item didn't exist yet, or the job didn't run. Hover a square for
-the date and state. On narrow screens the oldest days drop off via CSS
-rather than squashing the label.
+calendar day (`{"YYYY-MM-DD": {label: colour}}`, last run of the day wins)
+and `check.py` folds the last `LOOKBACK_DAYS` into each item as `history`,
+so the page needs no extra fetch. `⬜` means no record for that day — the
+item didn't exist yet, or the job didn't run. Hover a square for the date
+and state. On narrow screens the oldest days drop off via CSS rather than
+squashing the label.
+
+`history.json` retains 3× the rendered window, so widening `LOOKBACK_DAYS`
+back out doesn't lose days that were already recorded.
 
 _(The Pi RGB-matrix clock check was removed — the `ssh … systemctl is-active`
 probe was too flaky. TODO: a reliable heartbeat.)_

@@ -275,7 +275,7 @@ agents = sink(agents)
 # day; a second run the same day overwrites it. Each item then carries a
 # `history` list of LOOKBACK_DAYS colours, oldest first, None where we have
 # no record, so the page can draw a strip of squares with no extra fetch.
-LOOKBACK_DAYS = 7
+LOOKBACK_DAYS = 5
 today = time.strftime("%Y-%m-%d", time.localtime(NOW))
 
 hist = {}
