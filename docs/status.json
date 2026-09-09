@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T14:13:35Z",
+  "generated": "2026-09-09T14:15:03Z",
   "cutoff_hours": 24,
   "sections": [
     {
@@ -38,18 +38,19 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "13m ago",
+          "note": "14m ago",
           "age_hours": 0.2
         },
         {
           "label": "Wharton Gmail (CLI)",
-          "color": "red",
-          "note": "credentials missing \u2014 re-auth"
+          "color": "green",
+          "note": "1m ago",
+          "age_hours": 0.0
         },
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "1m ago",
+          "note": "2m ago",
           "age_hours": 0.0
         },
         {
@@ -80,13 +81,13 @@
           "label": "ntfy push",
           "color": "red",
           "note": "no check-in run in 24h (6d ago)",
-          "age_hours": 143.0
+          "age_hours": 143.1
         },
         {
           "label": "iMessage",
           "color": "red",
           "note": "no check-in run in 24h (6d ago)",
-          "age_hours": 143.0
+          "age_hours": 143.1
         },
         {
           "label": "WhatsApp",
@@ -109,7 +110,7 @@
           "label": "morning-checkin",
           "color": "red",
           "note": "no run in 24h (6d ago)",
-          "age_hours": 144.0
+          "age_hours": 144.1
         },
         {
           "label": "import-downloads-to-photos",
@@ -124,8 +125,8 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "5h ago",
-          "age_hours": 5.1
+          "note": "1m ago",
+          "age_hours": 0.0
         },
         {
           "label": "WRTCbot",
