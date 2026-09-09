@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:16:17Z",
+  "generated": "2026-09-09T17:16:37Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -120,15 +120,15 @@
         },
         {
           "label": "Whoop (internal API)",
-          "color": "red",
-          "note": "last token refresh 6d ago",
-          "age_hours": 140.9,
+          "color": "green",
+          "note": "1m ago",
+          "age_hours": -0.0,
           "history": [
             "red",
             "red",
             "red",
             "red",
-            "red"
+            "green"
           ]
         },
         {
@@ -267,7 +267,7 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "5m ago",
+          "note": "6m ago",
           "age_hours": 0.1,
           "history": [
             "green",

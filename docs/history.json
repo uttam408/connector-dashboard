@@ -170,7 +170,7 @@
     "WRTCbot": "red",
     "Wharton Gmail (CLI)": "green",
     "WhatsApp": "red",
-    "Whoop (internal API)": "red",
+    "Whoop (internal API)": "green",
     "Whoop (official API)": "green",
     "battery.plist": "red",
     "checkin-digest": "red",
