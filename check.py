@@ -95,6 +95,13 @@ agents = []
 
 
 # --------------------------------------------- Claude.ai MCP connectors ----
+# MCP connectors that are deliberately not in use -- shown red but dimmed,
+# excluded from the count, and sunk to the bottom of the section.
+DIM_CONNECTORS = {
+    "pitchbook": "not in use right now",
+    "microsoft 365": "never connected",
+}
+
 try:
     text = run(["claude", "mcp", "list"]).stdout
     for line in text.splitlines():
@@ -111,9 +118,10 @@ try:
         if label.lower() in ("gmail", "google calendar", "google drive"):
             label += " (MCP)"
         s = status_part.lower()
-        if "pitchbook" in label.lower():
-            services.append(item(label, "red", "not in use right now",
-                                 intentional=True))
+        dim = next((note for key, note in DIM_CONNECTORS.items()
+                    if key in label.lower()), None)
+        if dim:
+            services.append(item(label, "red", dim, intentional=True))
         elif "connected" in s and "not" not in s:
             services.append(item(label, "green", ""))          # terse
         elif "auth" in s:
