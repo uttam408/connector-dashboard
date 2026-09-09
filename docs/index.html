@@ -23,11 +23,17 @@
   }
   ul { list-style: none; margin: 0; padding: 0; }
   li { display: flex; gap: 10px; white-space: nowrap; }
+  li .h { letter-spacing: 1px; flex: none; }
+  li .h i { font-style: normal; }
+  li .h i.gap { opacity: .25; }
   li .n { overflow: hidden; text-overflow: ellipsis; }
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
           overflow: hidden; text-overflow: ellipsis; }
   li.off { opacity: .4; }
   .err { color: #d1343b; }
+  /* narrow screens: drop the oldest days rather than squashing the label */
+  @media (max-width: 620px) { li .h i:nth-child(-n+3) { display: none; } }
+  @media (max-width: 460px) { li .h i:nth-child(-n+5) { display: none; } }
 </style>
 </head>
 <body>
@@ -37,7 +43,7 @@
   <div id="body"></div>
 </main>
 <script>
-const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}" };
+const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", none: "⬜" };
 function ago(iso) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
   if (s < 3600) return Math.max(1, Math.round(s / 60)) + "m ago";
@@ -68,7 +74,17 @@ async function load() {
     for (const it of sec.items) {
       const li = document.createElement("li");
       if (it.intentional) li.className = "off";
-      li.innerHTML = `<span>${SQ[it.color] || SQ.red}</span>` +
+      // 7-day strip, oldest -> today. Rightmost square is the current state.
+      const hist = it.history || [it.color];
+      const strip = hist.map((c, n) => {
+        const days = hist.length - 1 - n;
+        const when = days === 0 ? "today"
+          : days === 1 ? "yesterday" : days + " days ago";
+        return c
+          ? `<i title="${when}: ${c}">${SQ[c]}</i>`
+          : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
+      }).join("");
+      li.innerHTML = `<span class="h">${strip}</span>` +
         `<span class="n"></span><span class="d"></span>`;
       li.querySelector(".n").textContent = it.label;
       li.querySelector(".d").textContent = it.note || "";

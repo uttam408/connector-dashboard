@@ -26,6 +26,7 @@ from pathlib import Path
 CUTOFF_H = 24
 HOME = Path.home()
 OUT = Path(__file__).resolve().parent / "docs" / "status.json"
+HIST = Path(__file__).resolve().parent / "docs" / "history.json"
 NOW = time.time()
 PATH = os.environ.get("PATH", "") + f":{HOME}/.local/bin:/opt/homebrew/bin"
 
@@ -186,7 +187,9 @@ for label, p in [
 # ---------------------------------------------- notification delivery ----
 # morning-checkin and (when not paused) checkin-digest both push via the
 # same ntfy + iMessage notifiers -- freshness = the most recent of the two.
-notif_h = newest_age("~/checkin/launchd.log", "~/Library/Logs/checkin-digest.log")
+# NB: ~/checkin/launchd.log is launchd's stdout redirect and is always 0
+# bytes -- detect_and_send.py writes its own checkin.log. Watch that one.
+notif_h = newest_age("~/checkin/checkin.log", "~/Library/Logs/checkin-digest.log")
 for label in ("ntfy push", "iMessage"):
     if notif_h is not None and notif_h < CUTOFF_H:
         services.append(item(label, "green", rel(notif_h), notif_h))
@@ -213,7 +216,8 @@ else:
 # an agent with a schedule_note fires less than daily -- judge it by whether
 # it's loaded and last exited cleanly, not by 24h freshness.
 AGENTS = [
-    ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/launchd.log", False),
+    # checkin.log, not launchd.log -- see the note by notif_h above
+    ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/checkin.log", False),
     ("checkin-digest", "com.uttam.checkin-digest",
      "~/Library/Logs/checkin-digest.log", False),
     ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
@@ -266,10 +270,41 @@ services = sink(services)
 agents = sink(agents)
 
 
+# ------------------------------------------- 7-day per-item lookback ----
+# HIST maps "YYYY-MM-DD" (local) -> {label: "green"|"red"}. One entry per
+# day; a second run the same day overwrites it. Each item then carries a
+# `history` list of LOOKBACK_DAYS colours, oldest first, None where we have
+# no record, so the page can draw a strip of squares with no extra fetch.
+LOOKBACK_DAYS = 7
+today = time.strftime("%Y-%m-%d", time.localtime(NOW))
+
+hist = {}
+if HIST.exists():
+    try:
+        hist = json.loads(HIST.read_text())
+    except ValueError:
+        hist = {}
+
+hist[today] = {i["label"]: i["color"]
+               for s in (services, agents) for i in s}
+# keep a little more than we render, so widening LOOKBACK_DAYS isn't lossy
+for stale in sorted(hist)[:-(LOOKBACK_DAYS * 3)]:
+    del hist[stale]
+HIST.write_text(json.dumps(hist, indent=2, sort_keys=True) + "\n")
+
+days = [time.strftime("%Y-%m-%d",
+                      time.localtime(NOW - d * 86400))
+        for d in range(LOOKBACK_DAYS - 1, -1, -1)]
+for section in (services, agents):
+    for i in section:
+        i["history"] = [hist.get(d, {}).get(i["label"]) for d in days]
+
+
 # ------------------------------------------------------------- write ----
 payload = {
     "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(NOW)),
     "cutoff_hours": CUTOFF_H,
+    "lookback_days": LOOKBACK_DAYS,
     "sections": [
         {"name": "services", "items": services},
         {"name": "agents", "items": agents},

@@ -1,6 +1,7 @@
 {
-  "generated": "2026-09-09T17:07:21Z",
+  "generated": "2026-09-09T17:10:22Z",
   "cutoff_hours": 24,
+  "lookback_days": 7,
   "sections": [
     {
       "name": "services",
@@ -8,99 +9,252 @@
         {
           "label": "Google Drive (MCP)",
           "color": "green",
-          "note": ""
+          "note": "",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Google Calendar (MCP)",
           "color": "green",
-          "note": ""
+          "note": "",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Gmail (MCP)",
           "color": "green",
-          "note": ""
+          "note": "",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Playwright",
           "color": "green",
-          "note": ""
+          "note": "",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "red",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Tailscale",
           "color": "green",
-          "note": "2 peers"
+          "note": "2 peers",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 3.1
+          "age_hours": 3.2,
+          "history": [
+            "green",
+            "green",
+            "red",
+            "green",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "Wharton Gmail (CLI)",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 2.9
+          "age_hours": 2.9,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 2.9
+          "age_hours": 3.0,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "Whoop (official API)",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.1
+          "age_hours": 7.2,
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Whoop (internal API)",
           "color": "red",
           "note": "last token refresh 6d ago",
-          "age_hours": 140.7
+          "age_hours": 140.8,
+          "history": [
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "Strava",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.1
+          "age_hours": 7.2,
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "Garmin",
           "color": "red",
           "note": "last token refresh 8d ago",
-          "age_hours": 191.7
+          "age_hours": 191.7,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "ntfy push",
-          "color": "red",
-          "note": "no check-in run in 24h (6d ago)",
-          "age_hours": 145.9
+          "color": "green",
+          "note": "4h ago",
+          "age_hours": 4.2,
+          "history": [
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "iMessage",
-          "color": "red",
-          "note": "no check-in run in 24h (6d ago)",
-          "age_hours": 145.9
+          "color": "green",
+          "note": "4h ago",
+          "age_hours": 4.2,
+          "history": [
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "WhatsApp",
           "color": "red",
           "note": "Desktop not syncing \u2014 DB 28h ago",
-          "age_hours": 28.2
+          "age_hours": 28.3,
+          "history": [
+            "green",
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "Microsoft 365",
           "color": "red",
           "note": "never connected",
-          "intentional": true
+          "intentional": true,
+          "history": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "red"
+          ]
         },
         {
           "label": "PitchBook Premium",
           "color": "red",
           "note": "not in use right now",
-          "intentional": true
+          "intentional": true,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         }
       ]
     },
@@ -109,48 +263,120 @@
       "items": [
         {
           "label": "morning-checkin",
-          "color": "red",
-          "note": "no run in 24h (6d ago)",
-          "age_hours": 146.9
+          "color": "green",
+          "note": "4h ago",
+          "age_hours": 4.2,
+          "history": [
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red",
+            "green"
+          ]
         },
         {
           "label": "import-downloads-to-photos",
           "color": "green",
-          "note": "Mon & Thu 23:00"
+          "note": "Mon & Thu 23:00",
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "strava-kudos",
           "color": "red",
-          "note": "no run in 24h (never)"
+          "note": "no run in 24h (never)",
+          "history": [
+            "green",
+            "green",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "connector-dashboard",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 2.9
+          "age_hours": 2.9,
+          "history": [
+            "green",
+            "green",
+            "green",
+            "green",
+            "red",
+            "green",
+            "green"
+          ]
         },
         {
           "label": "WRTCbot",
           "color": "red",
-          "note": "not set up \u2014 weekly run email still manual"
+          "note": "not set up \u2014 weekly run email still manual",
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "checkin-digest",
           "color": "red",
           "note": "paused",
-          "intentional": true
+          "intentional": true,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "strava-friends-feed",
           "color": "red",
           "note": "disabled \u2014 replaced by strava-kudos",
-          "intentional": true
+          "intentional": true,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         },
         {
           "label": "battery.plist",
           "color": "red",
           "note": "not loaded \u2014 app self-manages",
-          "intentional": true
+          "intentional": true,
+          "history": [
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red",
+            "red"
+          ]
         }
       ]
     }

@@ -10,7 +10,8 @@ GitHub Pages.
 
 | piece | what it does |
 |-------|--------------|
-| `check.py` | probes each source locally, writes **sanitized** `docs/status.json` |
+| `check.py` | probes each source locally, writes **sanitized** `docs/status.json` + `docs/history.json` |
+| `backfill_history.py` | one-time (idempotent) seed of `history.json` from the repo's own `status.json` commits |
 | `run.sh` | runs `check.py`, then commits & pushes `docs/` if it changed |
 | `com.uttam.connector-dashboard.plist` | launchd agent &mdash; fires `run.sh` daily at **05:00** local |
 | `docs/index.html` | zero-dependency text + emoji dashboard that renders `status.json` |
@@ -30,6 +31,17 @@ exited cleanly. Intentionally-off entries (`PitchBook Premium`,
 dimmed, excluded from the count, and sink to the bottom of their section.
 
 Green rows show only their age (or nothing); red rows stay verbose.
+
+### 7-day lookback
+
+Each row leads with a strip of seven squares, oldest → today; the rightmost
+square is the current state. `docs/history.json` keeps one record per
+calendar day (`{"YYYY-MM-DD": {label: colour}}`, last run of the day wins,
+pruned to 21 days) and `check.py` folds the last 7 into each item as
+`history`, so the page needs no extra fetch. `⬜` means no record for that
+day — the item didn't exist yet, or the job didn't run. Hover a square for
+the date and state. On narrow screens the oldest days drop off via CSS
+rather than squashing the label.
 
 _(The Pi RGB-matrix clock check was removed — the `ssh … systemctl is-active`
 probe was too flaky. TODO: a reliable heartbeat.)_
