@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:28:15Z",
+  "generated": "2026-09-09T17:28:41Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -69,7 +69,7 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "6m ago",
+          "note": "7m ago",
           "age_hours": 0.1,
           "history": [
             "red",
@@ -96,7 +96,7 @@
           "label": "Secondary Gmail (CLI)",
           "color": "green",
           "note": "9m ago",
-          "age_hours": 0.1,
+          "age_hours": 0.2,
           "history": [
             "red",
             "red",
@@ -267,7 +267,7 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "4m ago",
+          "note": "5m ago",
           "age_hours": 0.1,
           "history": [
             "green",
