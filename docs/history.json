@@ -169,7 +169,7 @@
     "Tailscale": "green",
     "WRTCbot": "red",
     "Wharton Gmail (CLI)": "green",
-    "WhatsApp": "red",
+    "WhatsApp": "green",
     "Whoop (internal API)": "green",
     "Whoop (official API)": "green",
     "battery.plist": "red",
@@ -180,6 +180,6 @@
     "morning-checkin": "green",
     "ntfy push": "green",
     "strava-friends-feed": "red",
-    "strava-kudos": "red"
+    "strava-kudos": "green"
   }
 }

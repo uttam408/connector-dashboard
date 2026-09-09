@@ -222,9 +222,10 @@ AGENTS = [
      "~/Library/Logs/checkin-digest.log", False),
     ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
      "~/Library/Logs/import-downloads-to-photos.log", "Mon & Thu 23:00"),
+    # log moved out of iCloud (launchd can't open evicted files); runs twice
+    # a week, so judge it on loaded + clean exit rather than 24h freshness
     ("strava-kudos", "com.uttam408.strava-kudos",
-     "~/Library/Mobile Documents/com~apple~CloudDocs/strava-friends-feed/kudos.log",
-     False),
+     "~/Library/Logs/strava-kudos.log", "Mon & Thu 23:00"),
     ("connector-dashboard", "com.uttam.connector-dashboard",
      "~/Library/Logs/connector-dashboard.log", False),
 ]

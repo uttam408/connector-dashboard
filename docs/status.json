@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:16:37Z",
+  "generated": "2026-09-09T17:20:14Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -83,7 +83,7 @@
           "label": "Wharton Gmail (CLI)",
           "color": "green",
           "note": "3h ago",
-          "age_hours": 3.0,
+          "age_hours": 3.1,
           "history": [
             "red",
             "red",
@@ -95,8 +95,8 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "3h ago",
-          "age_hours": 3.1,
+          "note": "1m ago",
+          "age_hours": 0.0,
           "history": [
             "red",
             "red",
@@ -121,8 +121,8 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "1m ago",
-          "age_hours": -0.0,
+          "note": "4m ago",
+          "age_hours": 0.1,
           "history": [
             "red",
             "red",
@@ -148,7 +148,7 @@
           "label": "Garmin",
           "color": "red",
           "note": "last token refresh 8d ago",
-          "age_hours": 191.8,
+          "age_hours": 191.9,
           "history": [
             "red",
             "red",
@@ -185,15 +185,15 @@
         },
         {
           "label": "WhatsApp",
-          "color": "red",
-          "note": "Desktop not syncing \u2014 DB 28h ago",
-          "age_hours": 28.4,
+          "color": "green",
+          "note": "1m ago",
+          "age_hours": 0.0,
           "history": [
             "green",
             "red",
             "red",
             "red",
-            "red"
+            "green"
           ]
         },
         {
@@ -254,20 +254,20 @@
         },
         {
           "label": "strava-kudos",
-          "color": "red",
-          "note": "no run in 24h (never)",
+          "color": "green",
+          "note": "Mon & Thu 23:00",
           "history": [
             "red",
             "red",
             "red",
             "red",
-            "red"
+            "green"
           ]
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "6m ago",
+          "note": "4m ago",
           "age_hours": 0.1,
           "history": [
             "green",
