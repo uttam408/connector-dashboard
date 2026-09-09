@@ -24,9 +24,18 @@ APIs, notifications, WhatsApp) and **agents** (launchd jobs).
 An entry is **green** only if its underlying credential / data / log was
 refreshed within the last **24 h** (`CUTOFF_H` in `check.py`). Otherwise
 **red**. Live daemons are judged by a health check instead: MCP connectors
-via `claude mcp list`, Tailscale via `tailscale status`. Agents that fire
-less than daily (`import-downloads-to-photos`) are green if loaded and last
-exited cleanly. Intentionally-off entries (`PitchBook Premium`,
+via `claude mcp list`, Tailscale via `tailscale status`, and **Garmin** by an
+actual ~1s ping (`garminconnect` login from the cached tokenstore + a
+`get_full_name()` call). Garmin gets a real ping because it's an on-demand
+CLI with no scheduled job — file age would flag it red every day nobody
+happened to run it — and because `garminconnect` silently refreshes an
+expired access token from the stored refresh token, so an old file is not
+evidence of a problem. Whoop's **internal** API deliberately stays on the age
+rule: that endpoint has no refresh flow, so staleness there really does mean
+"go re-login".
+
+Agents that fire less than daily (`import-downloads-to-photos`,
+`strava-kudos`) are green if loaded and last exited cleanly. Intentionally-off entries (`PitchBook Premium`,
 `checkin-digest` (paused), `strava-friends-feed`, `battery.plist`) are
 dimmed, excluded from the count, and sink to the bottom of their section.
 

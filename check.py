@@ -175,13 +175,45 @@ for label, d in [
 # ------------------------------------------------- health data tools ----
 for label, p in [
     ("Whoop (official API)", "~/whoop-sync/tokens.json"),
+    # no refresh flow for the internal endpoint -- staleness really does mean
+    # "go re-login", so this one stays on the age rule
     ("Whoop (internal API)", "~/whoop-unofficial/tokens.json"),
     ("Strava", "~/strava-sync/tokens.json"),
-    ("Garmin", "~/garmin-sync/.garmintokens/garmin_tokens.json"),
 ]:
     h = age_hours(p)
     c, note = fresh(h, "token refresh")
     services.append(item(label, c, note, h))
+
+
+# Garmin is an on-demand CLI with no scheduled job, so file age says nothing
+# useful -- and garminconnect silently refreshes an expired access token from
+# the stored refresh token. Ping it for real instead (~1s).
+def garmin_ping():
+    py = os.path.expanduser("~/garmin-sync/venv/bin/python")
+    store = os.path.expanduser("~/garmin-sync/.garmintokens")
+    if not os.path.exists(py):
+        return item("Garmin", "red", "sync tool not installed")
+    probe = (
+        "import garminconnect;"
+        "c=garminconnect.Garmin();"
+        f"c.login(tokenstore={store!r});"
+        "print(c.get_full_name())"
+    )
+    try:
+        r = subprocess.run([py, "-c", probe], capture_output=True,
+                           text=True, timeout=60)
+    except subprocess.TimeoutExpired:
+        return item("Garmin", "red", "ping timed out")
+    if r.returncode == 0 and r.stdout.strip():
+        return item("Garmin", "green", "")
+    err = (r.stderr or "").strip().splitlines()
+    tail = err[-1][:60] if err else "unknown error"
+    if "login" in tail.lower() or "auth" in tail.lower():
+        return item("Garmin", "red", "session expired — re-login")
+    return item("Garmin", "red", f"ping failed: {tail}")
+
+
+services.append(garmin_ping())
 
 
 # ---------------------------------------------- notification delivery ----

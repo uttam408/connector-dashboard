@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:20:32Z",
+  "generated": "2026-09-09T17:23:48Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -69,8 +69,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "3h ago",
-          "age_hours": 3.3,
+          "note": "2m ago",
+          "age_hours": 0.0,
           "history": [
             "red",
             "green",
@@ -95,8 +95,8 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "1m ago",
-          "age_hours": 0.0,
+          "note": "4m ago",
+          "age_hours": 0.1,
           "history": [
             "red",
             "red",
@@ -109,7 +109,7 @@
           "label": "Whoop (official API)",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.3,
+          "age_hours": 7.4,
           "history": [
             "green",
             "green",
@@ -121,7 +121,7 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "4m ago",
+          "note": "7m ago",
           "age_hours": 0.1,
           "history": [
             "red",
@@ -135,7 +135,7 @@
           "label": "Strava",
           "color": "green",
           "note": "7h ago",
-          "age_hours": 7.3,
+          "age_hours": 7.4,
           "history": [
             "green",
             "green",
@@ -146,22 +146,21 @@
         },
         {
           "label": "Garmin",
-          "color": "red",
-          "note": "last token refresh 8d ago",
-          "age_hours": 191.9,
+          "color": "green",
+          "note": "",
           "history": [
             "red",
             "red",
             "red",
             "red",
-            "red"
+            "green"
           ]
         },
         {
           "label": "ntfy push",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.3,
+          "age_hours": 4.4,
           "history": [
             "red",
             "red",
@@ -174,7 +173,7 @@
           "label": "iMessage",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.3,
+          "age_hours": 4.4,
           "history": [
             "red",
             "red",
@@ -186,8 +185,8 @@
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "1m ago",
-          "age_hours": 0.0,
+          "note": "4m ago",
+          "age_hours": 0.1,
           "history": [
             "green",
             "red",
@@ -231,7 +230,7 @@
           "label": "morning-checkin",
           "color": "green",
           "note": "4h ago",
-          "age_hours": 4.3,
+          "age_hours": 4.4,
           "history": [
             "red",
             "red",
@@ -267,7 +266,7 @@
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "4m ago",
+          "note": "3m ago",
           "age_hours": 0.1,
           "history": [
             "green",
