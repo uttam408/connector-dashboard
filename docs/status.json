@@ -291,14 +291,14 @@
         },
         {
           "label": "strava-kudos-muse",
-          "color": "gray",
-          "note": "no local mirror",
+          "color": "green",
+          "note": "2 kudos today \u00b7 every 56h",
           "history": [
             null,
             null,
             null,
             null,
-            null
+            "green"
           ]
         },
         {
