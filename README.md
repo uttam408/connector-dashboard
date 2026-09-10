@@ -87,4 +87,8 @@ Wharton / secondary) &middot; Whoop (official + internal), Strava, Garmin
 tokens &middot; ntfy + iMessage delivery &middot; WhatsApp local DB freshness
 
 **agents:** morning-checkin, checkin-digest, import-downloads-to-photos,
-strava-kudos, this dashboard, plus the two disabled ones.
+strava-kudos, this dashboard, daily-news-muse (cloud cron run by Muse), plus
+the two disabled ones.
+
+`daily-news-muse.log` is a heartbeat only (one timestamp line per run); the
+digest content itself is never published.

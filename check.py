@@ -327,6 +327,33 @@ agents.append(_skm_prev if _skm_prev
               else item("strava-kudos-muse", "grey", "no runs yet"))
 
 
+# daily-news-muse: cloud cron run by Muse (not a Mac launchd agent).
+# It appends one timestamp line to daily-news-muse.log each morning after
+# sending the digest -- heartbeat only, no digest content is published.
+# Health = commit age of the newest heartbeat (run.sh merges origin/main
+# before check.py, so this morning's push is in the working tree).
+def _dnm_age_h():
+    try:
+        r = run(["git", "log", "-1", "--format=%ct", "--",
+                 str(Path(__file__).resolve().parent / "daily-news-muse.log")],
+                timeout=15)
+        if r.returncode != 0 or not r.stdout.strip():
+            return None
+        return (NOW - int(r.stdout.strip())) / 3600.0
+    except Exception:
+        return None
+
+
+_dnm_h = _dnm_age_h()
+if _dnm_h is None:
+    agents.append(item("daily-news-muse", "red", "no heartbeat yet"))
+elif _dnm_h < 30:
+    agents.append(item("daily-news-muse", "green", rel(_dnm_h), _dnm_h))
+else:
+    agents.append(item("daily-news-muse", "red",
+                       f"no heartbeat in 30h ({rel(_dnm_h)})", _dnm_h))
+
+
 # dimmed / intentionally-off entries sink to the bottom of their section
 def sink(lst):
     return ([i for i in lst if not i.get("intentional")] +
