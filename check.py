@@ -309,17 +309,22 @@ agents.append(item("battery.plist", "red",
                    "not loaded — app self-manages", intentional=True))
 
 # strava-kudos-muse: cloud cron run by Muse (not a Mac launchd agent).
-# Health = freshness of its run log in the private shared-context repo.
-# Clone that repo to ~/shared-context on this Mac for this check to go green.
-_skm = os.path.expanduser("~/shared-context/strava-kudos-muse.md")
-_skm_h = age_hours(_skm)
-if _skm_h is None:
-    agents.append(item("strava-kudos-muse", "gray", "no local mirror"))
-elif _skm_h < 80:
-    agents.append(item("strava-kudos-muse", "green", rel(_skm_h), _skm_h))
-else:
-    agents.append(item("strava-kudos-muse", "red",
-                       f"no run in 80h ({rel(_skm_h)})", _skm_h))
+# Its status row is maintained via GitHub by the automation itself after each
+# run -- carry the previous entry forward so this regeneration never drops or
+# overwrites it.
+_skm_prev = None
+try:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "docs", "status.json"), encoding="utf-8") as _skm_f:
+        _skm_prev_json = json.load(_skm_f)
+    _skm_prev = next(
+        _it for _sec in _skm_prev_json.get("sections", [])
+        for _it in _sec.get("items", [])
+        if _it.get("label") == "strava-kudos-muse")
+except (OSError, ValueError, StopIteration):
+    _skm_prev = None
+agents.append(_skm_prev if _skm_prev
+              else item("strava-kudos-muse", "grey", "no runs yet"))
 
 
 # dimmed / intentionally-off entries sink to the bottom of their section
