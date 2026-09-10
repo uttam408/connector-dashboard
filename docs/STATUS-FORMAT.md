@@ -41,7 +41,7 @@ Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
 | `ts` | yes | ISO-8601 **with offset**, e.g. `2026-09-10T04:00:12-04:00` |
 | `color` | yes | `green` ok · `red` failed · `gray` skipped (a less-than-daily job on an off day) |
 | `update` | no | what happened this run — short: `"digest sent"`, `"gave 2 kudos"` |
-| `next` | no | human next-run string: `"Sat 6:35 PM"`, `"6 AM"` |
+| `next` | no | the **concrete next run**, not the recurrence: `"tonight 11 PM"`, `"tomorrow 6 AM"`, `"Sat 6:35 PM"`. Recompute it each time you report so it stays fresh. |
 
 The page shows the note as the newest run's present fields joined by ` | `:
 `gave 2 kudos | 3h ago | next Sat 6:35 PM` (agents show the `ts` as "x ago";
@@ -68,7 +68,13 @@ If you have no working tree (pure GitHub API): GET the file for its blob SHA
 + content, add your line, PUT it back. Retry on 409.
 
 Machines with the repo can use `report.py`:
-`python3 report.py --label X --section agents --color green --update "…" --next "…" --push`
+`python3 report.py --label X --section agents --color green --update "…" --schedule "MON,THU 23:00" --push`
+
+`--schedule "<DAYS> <TIMES>"` (DAYS = `DAILY` or `MON,THU,…`; TIMES = comma
+`HH:MM`) makes `report.py` compute the concrete `next` for you at report time
+— e.g. `"DAILY 06:00"` → `"tomorrow 6 AM"`. Pass `--next "…"` to set it
+literally instead. `schedule.py` in the repo root exposes `next_run(spec)`
+directly.
 
 ## Static row (`.json`)
 

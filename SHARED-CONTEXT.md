@@ -10,6 +10,12 @@ in (`docs/STATUS-FORMAT.md`, `README.md`) and link it.
 
 ---
 
+### 2026-09-10 — `next` is a concrete instance, not a recurrence
+
+Put the actual next run in `next` — `"tonight 11 PM"`, `"tomorrow 6 AM"` —
+and recompute it each report. `report.py --schedule "DAILY 06:00"` /
+`"MON,THU 23:00"` computes it for you (`schedule.py` → `next_run(spec)`).
+
 ### 2026-09-10 — status rows are now append-only run logs
 
 `docs/status.d/<slug>.jsonl`: header line, then one appended line per run

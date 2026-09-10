@@ -25,6 +25,8 @@ import subprocess
 import sys
 import time
 
+from schedule import next_run
+
 REPO = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(REPO, "docs", "status.d")
 
@@ -43,7 +45,11 @@ def main():
     ap.add_argument("--color", required=True, choices=["green", "red", "gray"])
     ap.add_argument("--update", default="")
     ap.add_argument("--ts", default=None, help="ISO-8601 w/ offset; default now")
-    ap.add_argument("--next", dest="next_", default="")
+    ap.add_argument("--next", dest="next_", default="",
+                    help="literal next-run string; overrides --schedule")
+    ap.add_argument("--schedule", default="",
+                    help='recurrence, e.g. "DAILY 06:00" or "MON,THU 23:00"; '
+                         "the concrete next instance is computed now")
     ap.add_argument("--order", type=int, default=500)
     ap.add_argument("--stale-hours", type=float, default=None)
     ap.add_argument("--push", action="store_true")
@@ -65,8 +71,9 @@ def main():
            "color": args.color}
     if args.update:
         run["update"] = args.update
-    if args.next_:
-        run["next"] = args.next_
+    nxt = args.next_ or (next_run(args.schedule) if args.schedule else "")
+    if nxt:
+        run["next"] = nxt
 
     lines = []
     if os.path.exists(path):
