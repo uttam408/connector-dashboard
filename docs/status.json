@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T17:28:41Z",
+  "generated": "2026-09-10T09:04:36Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -44,14 +44,14 @@
         },
         {
           "label": "Playwright",
-          "color": "green",
-          "note": "",
+          "color": "red",
+          "note": "unavailable",
           "history": [
-            "green",
             "green",
             "red",
             "green",
-            "green"
+            "green",
+            "red"
           ]
         },
         {
@@ -69,47 +69,47 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "7m ago",
-          "age_hours": 0.1,
+          "note": "16h ago",
+          "age_hours": 15.7,
           "history": [
-            "red",
             "green",
             "red",
             "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "Wharton Gmail (CLI)",
           "color": "green",
-          "note": "3h ago",
-          "age_hours": 3.2,
+          "note": "19h ago",
+          "age_hours": 18.8,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "9m ago",
-          "age_hours": 0.2,
+          "note": "16h ago",
+          "age_hours": 15.7,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "Whoop (official API)",
           "color": "green",
-          "note": "7h ago",
-          "age_hours": 7.5,
+          "note": "23h ago",
+          "age_hours": 23.1,
           "history": [
             "green",
             "green",
@@ -121,21 +121,21 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "12m ago",
-          "age_hours": 0.2,
+          "note": "16h ago",
+          "age_hours": 15.8,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "Strava",
           "color": "green",
-          "note": "7h ago",
-          "age_hours": 7.5,
+          "note": "23h ago",
+          "age_hours": 23.1,
           "history": [
             "green",
             "green",
@@ -152,46 +152,46 @@
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "4h ago",
-          "age_hours": 4.5,
+          "note": "20h ago",
+          "age_hours": 20.1,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "iMessage",
           "color": "green",
-          "note": "4h ago",
-          "age_hours": 4.5,
+          "note": "20h ago",
+          "age_hours": 20.1,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "9m ago",
-          "age_hours": 0.1,
+          "note": "5h ago",
+          "age_hours": 4.7,
           "history": [
+            "red",
+            "red",
+            "red",
             "green",
-            "red",
-            "red",
-            "red",
             "green"
           ]
         },
@@ -204,7 +204,7 @@
             null,
             null,
             null,
-            null,
+            "red",
             "red"
           ]
         },
@@ -229,13 +229,13 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "4h ago",
-          "age_hours": 4.5,
+          "note": "20h ago",
+          "age_hours": 20.1,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
@@ -254,25 +254,25 @@
         {
           "label": "strava-kudos",
           "color": "green",
-          "note": "22m ago",
-          "age_hours": 0.4,
+          "note": "1h ago",
+          "age_hours": 1.0,
           "history": [
             "red",
             "red",
             "red",
-            "red",
+            "green",
             "green"
           ]
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "5m ago",
-          "age_hours": 0.1,
+          "note": "16h ago",
+          "age_hours": 15.6,
           "history": [
             "green",
-            "green",
             "red",
+            "green",
             "green",
             "green"
           ]

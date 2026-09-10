@@ -181,5 +181,32 @@
     "ntfy push": "green",
     "strava-friends-feed": "red",
     "strava-kudos": "green"
+  },
+  "2026-09-10": {
+    "Garmin": "green",
+    "Gmail (MCP)": "green",
+    "Google Calendar (MCP)": "green",
+    "Google Drive (MCP)": "green",
+    "Microsoft 365": "red",
+    "Personal Gmail (CLI)": "green",
+    "PitchBook Premium": "red",
+    "Playwright": "red",
+    "Secondary Gmail (CLI)": "green",
+    "Strava": "green",
+    "Tailscale": "green",
+    "WRTCbot": "red",
+    "Wharton Gmail (CLI)": "green",
+    "WhatsApp": "green",
+    "Whoop (internal API)": "green",
+    "Whoop (official API)": "green",
+    "battery.plist": "red",
+    "checkin-digest": "red",
+    "connector-dashboard": "green",
+    "iMessage": "green",
+    "import-downloads-to-photos": "green",
+    "morning-checkin": "green",
+    "ntfy push": "green",
+    "strava-friends-feed": "red",
+    "strava-kudos": "green"
   }
 }
