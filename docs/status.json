@@ -292,12 +292,12 @@
         {
           "label": "strava-kudos-muse",
           "color": "green",
-          "note": "2 kudos today \u00b7 every 56h",
+          "note": "gave 2 kudos | 55m ago | next Sat 6:35 PM",
           "history": [
             null,
             null,
             null,
-            null,
+            "green",
             "green"
           ]
         },
