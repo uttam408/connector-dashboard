@@ -327,32 +327,6 @@ agents.append(_skm_prev if _skm_prev
               else item("strava-kudos-muse", "grey", "no runs yet"))
 
 
-# daily-news-muse: cloud cron run by Muse (not a Mac launchd agent).
-# Each morning it pushes daily-news/YYYY-MM-DD.md with the markets digest.
-# Health = commit age of the newest digest (run.sh merges origin/main
-# before check.py, so this morning's push is in the working tree).
-def _digest_age_h():
-    try:
-        r = run(["git", "log", "-1", "--format=%ct", "--",
-                 str(Path(__file__).resolve().parent / "daily-news")],
-                timeout=15)
-        if r.returncode != 0 or not r.stdout.strip():
-            return None
-        return (NOW - int(r.stdout.strip())) / 3600.0
-    except Exception:
-        return None
-
-
-_dn_h = _digest_age_h()
-if _dn_h is None:
-    agents.append(item("daily-news-muse", "red", "no digest pushed yet"))
-elif _dn_h < 30:
-    agents.append(item("daily-news-muse", "green", rel(_dn_h), _dn_h))
-else:
-    agents.append(item("daily-news-muse", "red",
-                       f"no digest in 30h ({rel(_dn_h)})", _dn_h))
-
-
 # dimmed / intentionally-off entries sink to the bottom of their section
 def sink(lst):
     return ([i for i in lst if not i.get("intentional")] +

@@ -15,7 +15,6 @@ GitHub Pages.
 | `run.sh` | merges origin/main first (picks up cloud pushes), runs `check.py`, then commits & pushes `docs/` if it changed |
 | `com.uttam.connector-dashboard.plist` | launchd agent &mdash; fires `run.sh` daily at **05:00** local |
 | `docs/index.html` | zero-dependency text + emoji dashboard that renders `status.json` |
-| `daily-news/` | dated market digests (`YYYY-MM-DD.md`) pushed each morning by the daily-news-muse cloud cron |
 
 Two sections: **services** (MCP connectors, Tailscale, CLI e-mail, health
 APIs, notifications, WhatsApp) and **agents** (launchd jobs).
@@ -88,5 +87,4 @@ Wharton / secondary) &middot; Whoop (official + internal), Strava, Garmin
 tokens &middot; ntfy + iMessage delivery &middot; WhatsApp local DB freshness
 
 **agents:** morning-checkin, checkin-digest, import-downloads-to-photos,
-strava-kudos, this dashboard, daily-news-muse (cloud cron run by Muse), plus
-the two disabled ones.
+strava-kudos, this dashboard, plus the two disabled ones.

@@ -1,9 +1,9 @@
 #!/bin/bash
 # Wrapper invoked by the launchd agent daily at 05:00.
-# Merges this morning's cloud pushes (e.g. the daily-news-muse digest),
-# runs the checker, commits docs/ if it changed, then pushes whatever is
-# ahead of origin -- retrying, because the Mac is often still bringing its
-# network up at 05:00 and the first push can time out on DNS.
+# Merges this morning's cloud pushes before running the checker, commits
+# docs/ if it changed, then pushes whatever is ahead of origin -- retrying,
+# because the Mac is often still bringing its network up at 05:00 and the
+# first push can time out on DNS.
 set -uo pipefail
 
 cd "$(dirname "$0")"
@@ -19,8 +19,8 @@ for attempt in 1 2 3 4 5 6; do
   sleep 60
 done
 
-# pull this morning's cloud pushes (e.g. the daily-news-muse digest) so the
-# health check sees them; skipped when it wouldn't fast-forward
+# pull this morning's cloud pushes so the health check sees them;
+# skipped when it wouldn't fast-forward
 git fetch -q origin main 2>/dev/null || true
 git merge --ff-only -q origin/main 2>/dev/null || echo "merge skipped — local ahead of origin"
 
