@@ -1,83 +1,94 @@
-# Status fragment format
+# Status format
 
-The dashboard at <https://uttam408.github.io/connector-dashboard/> is assembled
-**client-side** from one small JSON file per row. There is no server, no
-assembler, and no dependency on any single machine. Each agent writes its own
-fragment whenever it runs; the page reads all of them and renders.
+The dashboard at <https://uttam408.github.io/connector-dashboard/> assembles
+itself **client-side** from the files in `docs/status.d/`. No server, no
+assembler, no dependency on any single machine.
 
-## Where
+## One file per row
 
 ```
-docs/status.d/<slug>.json
+docs/status.d/<slug>.jsonl   a run log — for anything that runs on a schedule
+docs/status.d/<slug>.json    a static row — for things that never "run"
 ```
 
-`<slug>` = the label lowercased with every run of non-alphanumerics collapsed to
-`-` (e.g. label `Whoop (official API)` → `whoop-official-api.json`,
-`strava-kudos-muse` → `strava-kudos-muse.json`). One file, one row. You only
-ever write your own file, so there are no merge conflicts between agents.
+`<slug>` = the label lowercased, non-alphanumerics collapsed to `-`
+(`Whoop (official API)` → `whoop-official-api`, `strava-kudos-muse` →
+`strava-kudos-muse`). You only ever touch your own file.
 
-## Schema
+## Run log (`.jsonl`) — the common case
+
+Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
+
+```
+{"label":"strava-kudos-muse","section":"agents","order":45,"stale_hours":30}
+{"ts":"2026-09-10T04:00:12-04:00","color":"green","update":"gave 2 kudos","next":"Sat 6:35 PM"}
+{"ts":"2026-09-10T14:20:03-04:00","color":"red","update":"session expired — re-login"}
+```
+
+**Header** (identified by having `label`):
+
+| field | req | meaning |
+|-------|-----|---------|
+| `label` | yes | display name |
+| `section` | yes | `"services"` or `"agents"` |
+| `order` | no | sort key within the section; default `500` |
+| `stale_hours` | no | if the newest run's `ts` is older than this, the page shows the row red regardless of its colour — catches an agent that silently stopped |
+
+**Run line** (identified by having `ts`):
+
+| field | req | meaning |
+|-------|-----|---------|
+| `ts` | yes | ISO-8601 **with offset**, e.g. `2026-09-10T04:00:12-04:00` |
+| `color` | yes | `green` ok · `red` failed · `gray` skipped (a less-than-daily job on an off day) |
+| `update` | no | what happened this run — short: `"digest sent"`, `"gave 2 kudos"` |
+| `next` | no | human next-run string: `"Sat 6:35 PM"`, `"6 AM"` |
+
+The page shows the note as the newest run's present fields joined by ` | `:
+`gave 2 kudos | 3h ago | next Sat 6:35 PM` (agents show the `ts` as "x ago";
+services don't — their `update` text already carries any age that matters).
+The 5-day strip is the last colour recorded on each of the last 5 calendar
+days.
+
+### Writing to it — just append
+
+```
+echo '{"ts":"'"$(date -Iseconds)"'","color":"green","update":"gave 2 kudos","next":"tomorrow 04:00"}' \
+  >> docs/status.d/strava-kudos-muse.jsonl
+git add docs/status.d/strava-kudos-muse.jsonl
+git commit -m "status: strava-kudos-muse — gave 2 kudos"
+git pull --rebase && git push
+```
+
+No read, no trim, no SHA. `.gitattributes` sets `*.jsonl merge=union`, so two
+agents appending at the same time auto-merge. **Trimming is central** —
+`check.py` keeps the last 60 run lines per file on its 5am pass; you never
+trim your own file.
+
+If you have no working tree (pure GitHub API): GET the file for its blob SHA
++ content, add your line, PUT it back. Retry on 409.
+
+Machines with the repo can use `report.py`:
+`python3 report.py --label X --section agents --color green --update "…" --next "…" --push`
+
+## Static row (`.json`)
+
+For rows that never run — paused, disabled, not-built, not-in-use:
 
 ```json
-{
-  "label":   "strava-kudos-muse",
-  "section": "agents",
-  "color":   "green",
-  "update":  "gave 2 kudos",
-  "ts":      "2026-09-10T18:35:00-04:00",
-  "next":    "Sat 6:35 PM",
-  "order":   50,
-  "intentional": false,
-  "stale_hours": 26
-}
+{ "label": "checkin-digest", "section": "agents", "color": "red",
+  "update": "paused", "order": 20, "intentional": true }
 ```
 
-| field | required | meaning |
-|-------|----------|---------|
-| `label` | yes | display name, exactly as shown on the dashboard |
-| `section` | yes | `"services"` or `"agents"` |
-| `color` | yes | `"green"` ok · `"red"` failed / needs attention · `"gray"` skipped (a less-than-daily job on a day it isn't scheduled) |
-| `update` | no | what happened this run — short, e.g. `"digest sent"`, `"gave 2 kudos"`, `"session expired — re-login"` |
-| `ts` | no | ISO-8601 timestamp of this run **with offset**. The dashboard renders it as a live "x ago" that re-ticks in the browser. |
-| `next` | no | human string for the next scheduled run, e.g. `"Sat 6:35 PM"`, `"6 AM"`, `"Mon & Thu 23:00"` |
-| `order` | no | sort key within the section (ascending); default `500` |
-| `intentional` | no | `true` = dimmed, excluded from the green/red counts, sunk to the bottom (paused / disabled / not-in-use rows) |
-| `stale_hours` | no | if set and `now - ts` exceeds it, the page shows the row red regardless of `color` — catches an agent that silently stopped running |
-
-The dashboard composes the note line as the present fields joined by ` | `:
-
-```
-gave 2 kudos | 3h ago | next Sat 6:35 PM
-```
-
-Omit fields you don't have. A bare `{label, section, color}` is valid (that's
-what most `services` rows are).
+`intentional: true` → dimmed, excluded from the ok/failed counts, sunk to the
+bottom of its section.
 
 ## Sanitization
 
-Fragments are published to a public repo. **Never** put e-mail addresses, file
-paths, auth tokens, ntfy topics, contact names, or message/digest content in any
-field. `update` is a status, not a payload — "digest sent", not the digest.
+These files are public. **Never** put e-mail addresses, file paths, tokens,
+ntfy topics, contact names, or message/digest content in any field. `update`
+is a status, not a payload — "digest sent", not the digest.
 
-## How to write it
+## Adding a new row
 
-- **From a machine with the repo checked out** (Mac launchd agents): use
-  `report.py` in the repo root —
-  `python3 report.py --label "X" --section agents --color green --update "…" --next "…" --push`
-  It writes the fragment, commits just that file, and pushes with retry.
-- **From the cloud / no working tree** (Muse crons, GitHub Actions): PUT the file
-  via the GitHub Contents API. One file, its own blob SHA — no merge, safe to do
-  concurrently with any other agent.
-
-## History strip
-
-`docs/history.json` (`{ "YYYY-MM-DD": { label: color } }`) is an accumulator. A
-GitHub Actions cron (00:07 UTC) snapshots every current fragment's colour into
-it once a day — workflow in `history-workflow.yml.pending`, to be installed at
-`.github/workflows/history.yml`. The page folds the last 5 days into the strip
-of squares on each row. Agents do **not** write history.json.
-
-## Adding a new agent
-
-Just write your fragment. The page lists `docs/status.d/` via the GitHub API, so
-a new file appears on the next page load with no other change anywhere.
+Just create the file. The page lists `docs/status.d/` via the GitHub API, so
+it appears on the next page load with nothing else changed anywhere.

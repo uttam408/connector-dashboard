@@ -1,5 +1,4 @@
 {
-  "_moved": "The dashboard now assembles itself client-side from docs/status.d/*.json fragments. See docs/STATUS-FORMAT.md. This file is no longer read or generated; it is kept only so tooling that still expects a path here doesn't 404.",
-  "generated": null,
+  "_moved": "The dashboard is now assembled client-side from docs/status.d/*.jsonl run logs (and *.json static rows). See docs/STATUS-FORMAT.md. This file is dead — not read, not generated. Agents that used to edit it must switch to appending their own status.d/<slug>.jsonl.",
   "sections": []
 }

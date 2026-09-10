@@ -10,29 +10,30 @@ no assembler, no dependency on any single machine.
 ## Architecture
 
 ```
-docs/status.d/<slug>.json   one file per row — each agent writes its own
-docs/history.json           daily colour snapshot, for the 5-day strip
-docs/index.html             fetches all of the above and renders, client-side
+docs/status.d/<slug>.jsonl  append-only run log — header line + one line per run
+docs/status.d/<slug>.json   static row — for things that never "run"
+docs/index.html             lists status.d/ via the GitHub API, renders client-side
+SHARED-CONTEXT.md            coordination log — read it before structural changes
 ```
 
-- **Every row is a fragment.** An agent writes `docs/status.d/<label>.json`
-  whenever it runs. The page lists the directory via the GitHub API, fetches
-  each fragment, and renders. See **[docs/STATUS-FORMAT.md](docs/STATUS-FORMAT.md)**
-  for the schema — this is the contract other agents (Muse cloud crons, etc.)
-  write to.
-- **Realtime.** A row updates the moment its agent finishes, not at 5am. The
-  page re-fetches every 2 min and re-ticks the "x ago" every 30s.
-- **No Mac dependency for assembly.** If the Mac is offline, only the rows it
-  owns (the ones below) go stale — correctly, since those checks can't run
-  anywhere else.
+- **Every row is its own file.** An agent **appends** one line to its
+  `.jsonl` whenever it runs — `{ts, color, update?, next?}`. No read, no
+  merge (`.gitattributes: *.jsonl merge=union`). See
+  **[docs/STATUS-FORMAT.md](docs/STATUS-FORMAT.md)** for the schema — the
+  contract other agents (Muse cloud crons) write to.
+- **Realtime.** A row updates the moment its agent finishes. The page
+  re-fetches every 2 min and re-ticks "x ago" every 30s.
+- **No Mac dependency for assembly.** The page needs only the files in
+  `status.d/`. `check.py` writes the Mac-local rows and trims every log; if
+  the Mac is offline those rows go stale (correct) and logs grow a little
+  (harmless).
 
 | piece | what it does |
 |-------|--------------|
-| `check.py` | probes the **Mac-local** things (MCP connectors, Tailscale, gws creds, Whoop/Strava tokens, Garmin ping, WhatsApp DB, launchd agents that don't self-report) and writes their fragments |
-| `report.py` | fragment writer for machines with the repo checked out: writes one fragment, commits just that file, pushes with rebase-retry |
-| `run.sh` | launchd wrapper — runs `check.py`, commits changed fragments, pushes |
+| `check.py` | probes the **Mac-local** things (MCP connectors, Tailscale, gws creds, Whoop/Strava tokens, Garmin ping, WhatsApp DB, launchd agents that don't self-report), appends their run lines, and trims every `*.jsonl` to the last 60 runs |
+| `report.py` | appender for machines with the repo checked out: adds one run line, commits just that file, pushes with rebase-retry |
+| `run.sh` | launchd wrapper — runs `check.py`, commits, pushes |
 | `com.uttam.connector-dashboard.plist` | launchd agent — fires `run.sh` daily at **05:00** local |
-| `history-workflow.yml.pending` | GitHub Actions cron (00:07 UTC) that folds every fragment's colour into `history.json`. **Not yet installed** — move it to `.github/workflows/history.yml` and commit with a `workflow`-scoped token (`gh auth refresh -h github.com -s workflow`). |
 
 ## Colour rules
 
@@ -40,8 +41,8 @@ docs/index.html             fetches all of the above and renders, client-side
   less-than-daily agent on a day it isn't scheduled (excluded from the counts)
 - **intentional** rows (paused / disabled / not-in-use) are dimmed, excluded
   from the counts, and sink to the bottom
-- `stale_hours` on a fragment: the page shows it red if `now - ts` exceeds it,
-  catching an agent that silently stopped
+- `stale_hours` in a log's header: the page shows the row red if the newest
+  run's `ts` is older than it — catches an agent that silently stopped
 
 Where `check.py` still judges freshness itself:
 - **gws CLI creds / Whoop / Strava tokens** — file mtime within 24h
@@ -54,17 +55,17 @@ Where `check.py` still judges freshness itself:
 
 ## 5-day strip
 
-Each row leads with five squares, oldest → today. `docs/history.json`
-(`{"YYYY-MM-DD": {label: colour}}`) is filled by the GitHub Action once a day;
-the page folds the last five in. `⬜` = no record (row didn't exist / no
-snapshot). Hover for the date and state.
+Each row leads with five squares, oldest → today: the last colour recorded on
+each of the last 5 calendar days, read straight from the `.jsonl`. `⬜` = no
+run logged that day. Hover for the date and state.
 
 ## Adding / updating a row
 
 - **Machine with the repo:** `python3 report.py --label "X" --section agents
-  --color green --update "…" --next "…" --push`
-- **Cloud / no checkout:** PUT `docs/status.d/<slug>.json` via the GitHub
-  Contents API — one file, no merge. Schema in `docs/STATUS-FORMAT.md`.
+  --color green --update "…" --next "…" --push` — or just append a line and
+  `git commit && git pull --rebase && git push`.
+- **Cloud / no checkout:** GET the `.jsonl` for its blob SHA + content, add
+  your line, PUT it back (retry on 409). Schema in `docs/STATUS-FORMAT.md`.
 
 A brand-new label appears on the next page load with no other change anywhere.
 
@@ -76,7 +77,6 @@ launchctl kickstart -k gui/$(id -u)/com.uttam.connector-dashboard   # run now
 ```
 
 GitHub Pages: **Settings → Pages → Deploy from a branch → `main` / `/docs`**.
-The `history` workflow needs no setup beyond being on the default branch.
 
 ## Sanitization
 

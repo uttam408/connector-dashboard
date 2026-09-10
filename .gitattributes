@@ -1,0 +1,2 @@
+# newline-delimited run logs auto-merge appended lines
+*.jsonl merge=union

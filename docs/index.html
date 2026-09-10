@@ -43,12 +43,11 @@
 </main>
 <script>
 const REPO = "uttam408/connector-dashboard";
-const FRAG_DIR = "status.d";                       // relative to this page
 const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", gray: "\u{1F4A4}", none: "⬜" };
 const WORD = { green: "ok", red: "failed", gray: "skipped" };
 const SECTIONS = ["services", "agents"];
-const LIST_TTL = 10 * 60 * 1000;                   // re-list the dir this often
 const LOOKBACK = 5;
+const LIST_TTL = 10 * 60 * 1000;
 
 function ago(iso) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -57,128 +56,148 @@ function ago(iso) {
   if (s < 172800) return Math.round(s / 3600) + "h ago";
   return Math.round(s / 86400) + "d ago";
 }
-function localDay(offsetDays) {
-  const d = new Date(Date.now() - offsetDays * 86400000);
+function dayOf(iso) {                       // local calendar day of a timestamp
+  const d = new Date(iso);
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
     "-" + String(d.getDate()).padStart(2, "0");
 }
+function localDay(offset) {
+  return dayOf(new Date(Date.now() - offset * 86400000).toISOString());
+}
 
-// --- fragment discovery -----------------------------------------------------
-// Prefer the GitHub API directory listing (fully dynamic). Fall back to the
-// union of every label ever seen in history.json if the API is unreachable
-// or rate-limited, so the page still renders offline.
-async function listFragments(history) {
+// --- discovery: GitHub API dir listing, cached; fragments fetched from Pages
+async function listFiles() {
   try {
-    const cached = JSON.parse(sessionStorage.getItem("frag-list") || "null");
-    if (cached && Date.now() - cached.t < LIST_TTL) return cached.names;
+    const c = JSON.parse(sessionStorage.getItem("sd-list") || "null");
+    if (c && Date.now() - c.t < LIST_TTL) return c.names;
   } catch (e) { /* ignore */ }
+  const r = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/docs/status.d`,
+    { headers: { Accept: "application/vnd.github+json" } });
+  if (!r.ok) throw new Error("list " + r.status);
+  const names = (await r.json())
+    .filter(f => /\.(jsonl?|json)$/.test(f.name)).map(f => f.name);
   try {
-    const r = await fetch(
-      `https://api.github.com/repos/${REPO}/contents/docs/${FRAG_DIR}`,
-      { headers: { Accept: "application/vnd.github+json" } });
-    if (!r.ok) throw new Error(r.status);
-    const names = (await r.json())
-      .filter(f => f.name.endsWith(".json")).map(f => f.name);
-    try { sessionStorage.setItem("frag-list",
-      JSON.stringify({ t: Date.now(), names })); } catch (e) { /* ignore */ }
-    return names;
-  } catch (e) {
-    const labels = new Set();
-    for (const day of Object.values(history || {}))
-      for (const label of Object.keys(day)) labels.add(label);
-    return [...labels].map(l =>
-      l.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".json");
+    sessionStorage.setItem("sd-list", JSON.stringify({ t: Date.now(), names }));
+  } catch (e) { /* ignore */ }
+  return names;
+}
+
+// --- parse one status.d file into a row {header, runs[]}
+function parseFile(name, text) {
+  if (name.endsWith(".jsonl")) {
+    const objs = text.trim().split("\n").filter(Boolean).map(l => {
+      try { return JSON.parse(l); } catch (e) { return null; }
+    }).filter(Boolean);
+    const header = objs.find(o => o.label) || { label: name.replace(/\.jsonl$/, "") };
+    const runs = objs.filter(o => o.ts);
+    return { header, runs };
   }
+  // one-shot static .json
+  let f; try { f = JSON.parse(text); } catch (e) { return null; }
+  if (!f.label) return null;
+  return { header: f, runs: f.color ? [{ ts: null, color: f.color,
+    update: f.update, next: f.next, static: true }] : [] };
 }
 
-// --- render ---------------------------------------------------------------
-let rows = [];                 // [{frag, dEl}] for live "x ago" re-ticking
-let history = {};
+// --- one row -> {label, section, order, intentional, color, note, strip, ts}
+function resolve(row) {
+  const h = row.header;
+  const last = row.runs[row.runs.length - 1] || {};
+  let color = last.color || "red";
+  if (h.stale_hours && last.ts &&
+      Date.now() - new Date(last.ts).getTime() > h.stale_hours * 3600000)
+    color = "red";
 
-function noteFor(f) {
-  const parts = [];
-  if (f.update) parts.push(f.update);
-  if (f.ts) parts.push(ago(f.ts));
-  if (f.next) parts.push("next " + f.next);
-  return parts.join(" | ");
-}
-function colorFor(f) {
-  if (f.stale_hours && f.ts &&
-      Date.now() - new Date(f.ts).getTime() > f.stale_hours * 3600000)
-    return "red";
-  return f.color || "red";
+  const byDay = {};                        // last colour recorded per local day
+  for (const r of row.runs) if (r.ts) byDay[dayOf(r.ts)] = r.color;
+  const strip = [];
+  for (let i = LOOKBACK - 1; i >= 0; i--)
+    strip.push(byDay[localDay(i)] || (last.static ? color : null));
+
+  const section = h.section || "agents";
+  const note = () => {
+    const p = [];
+    if (last.update && last.update !== "backfill") p.push(last.update);
+    // services carry freshness in `update` text; only agents show bare "x ago"
+    if (last.ts && section === "agents") p.push(ago(last.ts));
+    if (last.next || h.next) p.push("next " + (last.next || h.next));
+    return p.join(" | ");
+  };
+
+  return {
+    label: h.label, section, order: h.order ?? 500,
+    intentional: !!h.intentional, color, strip, ts: last.ts, note,
+  };
 }
 
-function strip(label) {
-  let out = "";
-  for (let i = LOOKBACK - 1; i >= 0; i--) {
-    const c = (history[localDay(i)] || {})[label];
-    const when = i === 0 ? "today" : i === 1 ? "yesterday" : i + " days ago";
-    out += c
-      ? `<i title="${when}: ${WORD[c] || c}">${SQ[c] || SQ.none}</i>`
-      : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
-  }
-  return out;
-}
-
+let live = [];                             // [{item, dEl}] for "x ago" re-tick
 function tick() {
-  for (const { frag, dEl } of rows) if (frag.ts) dEl.textContent = noteFor(frag);
+  for (const { item, dEl } of live) if (item.ts) dEl.textContent = item.note();
 }
 
-function render(frags) {
+function render(items) {
   const body = document.getElementById("body");
   body.innerHTML = "";
-  rows = [];
+  live = [];
   let green = 0, red = 0;
 
   for (const section of SECTIONS) {
-    const items = frags.filter(f => (f.section || "agents") === section)
-      .sort((a, b) =>
-        (!!a.intentional - !!b.intentional) ||
-        ((a.order ?? 500) - (b.order ?? 500)) ||
-        a.label.localeCompare(b.label));
-    if (!items.length) continue;
+    const rows = items.filter(it => it.section === section).sort((a, b) =>
+      (!!a.intentional - !!b.intentional) || (a.order - b.order) ||
+      a.label.localeCompare(b.label));
+    if (!rows.length) continue;
 
     const h2 = document.createElement("h2");
     h2.textContent = section;
     const ul = document.createElement("ul");
-    for (const f of items) {
-      const color = colorFor(f);
-      if (!f.intentional) { if (color === "green") green++; else if (color === "red") red++; }
+    for (const it of rows) {
+      if (!it.intentional) { if (it.color === "green") green++;
+        else if (it.color === "red") red++; }
+      const strip = it.strip.map((c, n) => {
+        const d = it.strip.length - 1 - n;
+        const when = d === 0 ? "today" : d === 1 ? "yesterday" : d + " days ago";
+        return c
+          ? `<i title="${when}: ${WORD[c] || c}">${SQ[c] || SQ.none}</i>`
+          : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
+      }).join("");
       const li = document.createElement("li");
-      if (f.intentional) li.className = "off";
-      li.innerHTML = `<span class="h">${strip(f.label)}</span>` +
+      if (it.intentional) li.className = "off";
+      li.innerHTML = `<span class="h">${strip}</span>` +
         `<span class="n"></span><span class="d"></span>`;
-      li.querySelector(".n").textContent = f.label;
+      li.querySelector(".n").textContent = it.label;
       const dEl = li.querySelector(".d");
-      dEl.textContent = noteFor(f);
-      rows.push({ frag: f, dEl });
+      dEl.textContent = it.note();
+      live.push({ item: it, dEl });
       ul.appendChild(li);
     }
     body.appendChild(h2);
     body.appendChild(ul);
   }
   document.getElementById("meta").textContent =
-    `${green} ok · ${red} failed · refreshed ${ago(new Date().toISOString())}`;
+    `${green} ok · ${red} failed · refreshed just now`;
 }
 
 async function load() {
-  try {
-    history = await fetch("history.json?_=" + Date.now()).then(r => r.json());
-  } catch (e) { history = {}; }
-
-  const names = await listFragments(history);
-  const frags = (await Promise.all(names.map(n =>
-    fetch(`${FRAG_DIR}/${n}?_=` + Date.now())
-      .then(r => r.ok ? r.json() : null).catch(() => null))))
-    .filter(f => f && f.label);
-
-  if (!frags.length) {
+  let names;
+  try { names = await listFiles(); }
+  catch (e) {
     document.getElementById("meta").innerHTML =
-      '<span class="err">no status fragments found</span>';
+      '<span class="err">could not list status.d (' + e.message + ')</span>';
     return;
   }
-  render(frags);
+  const items = (await Promise.all(names.map(n =>
+    fetch(`status.d/${n}?_=` + Date.now())
+      .then(r => r.ok ? r.text() : null)
+      .then(t => t && parseFile(n, t)).catch(() => null))))
+    .filter(Boolean).map(resolve);
+
+  if (!items.length) {
+    document.getElementById("meta").innerHTML =
+      '<span class="err">no status files found</span>';
+    return;
+  }
+  render(items);
 }
 
 load();
