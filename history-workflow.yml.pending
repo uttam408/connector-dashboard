@@ -1,0 +1,77 @@
+name: history snapshot
+
+# Once a day, fold the current colour of every status fragment into
+# docs/history.json so the dashboard can draw its 5-day strip. Runs in
+# GitHub's cloud -- no dependency on any of the reporting machines.
+
+on:
+  schedule:
+    - cron: "7 0 * * *"          # 00:07 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: history
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: fold fragments into history.json
+        run: |
+          python3 - <<'PY'
+          import glob, json, os, time
+
+          HIST = "docs/history.json"
+          KEEP = 45  # calendar days retained
+
+          def color(frag):
+              c = frag.get("color", "red")
+              sh, ts = frag.get("stale_hours"), frag.get("ts")
+              if sh and ts:
+                  try:
+                      age = time.time() - time.mktime(time.strptime(
+                          ts[:19], "%Y-%m-%dT%H:%M:%S"))
+                      if age > sh * 3600:
+                          return "red"
+                  except ValueError:
+                      pass
+              return c
+
+          today = {}
+          for path in sorted(glob.glob("docs/status.d/*.json")):
+              try:
+                  f = json.load(open(path))
+              except ValueError:
+                  continue
+              if f.get("label"):
+                  today[f["label"]] = color(f)
+
+          hist = {}
+          if os.path.exists(HIST):
+              try:
+                  hist = json.load(open(HIST))
+              except ValueError:
+                  hist = {}
+
+          hist[time.strftime("%Y-%m-%d", time.gmtime())] = today
+          for stale in sorted(hist)[:-KEEP]:
+              del hist[stale]
+
+          json.dump(hist, open(HIST, "w"), indent=2, sort_keys=True)
+          open(HIST, "a").write("\n")
+          print(f"{len(today)} rows snapshotted")
+          PY
+
+      - name: commit
+        run: |
+          git config user.name  "history-bot"
+          git config user.email "uttam408@users.noreply.github.com"
+          git add docs/history.json
+          git diff --cached --quiet || git commit -m "history: $(date -u +%F) snapshot"
+          git push

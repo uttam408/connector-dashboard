@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-check.py -- probe every service / credential / launchd agent this machine
-depends on and emit a SANITIZED status file for the GitHub Pages dashboard.
+check.py -- probe every connector / credential this machine can see and write
+one status fragment per row to docs/status.d/.
 
-Rule: an entry is GREEN only if it has been refreshed within the last 24h
-(CUTOFF_H). Otherwise RED. GRAY means skipped -- a less-than-daily agent on
-a day it isn't scheduled to run. Live daemons (MCP connectors, Tailscale) are
-judged by a health check instead. Intentionally-off entries are marked so
-the page can dim them, and sink to the bottom of their section.
+This covers only the things that genuinely need local access: MCP connectors,
+Tailscale, gws credential files, Whoop/Strava tokens, a Garmin ping, the
+WhatsApp DB, and the Mac launchd agents that don't self-report yet. Agents
+that run at other times of day write their own fragments (see report.py and
+docs/STATUS-FORMAT.md); this run does not touch those.
 
-Green rows carry a terse note (just the age, or nothing). Red rows stay
-verbose so the reason is obvious.
+If this Mac is down, only the rows it owns go stale -- which is correct, since
+those checks can't be done from anywhere else.
 
-Sanitization: the JSON written to docs/status.json contains only a label,
-a colour, a short generic note, and a rounded age. No file paths, e-mail
-addresses, ntfy topics, contact names, or message counts ever leave here.
+Sanitization: fragments are published to a public repo. Only a label, colour,
+and a short generic status string ever leave here -- never a path, address,
+token, ntfy topic, contact name, or message content.
 """
 
 import json
@@ -22,17 +22,54 @@ import os
 import re
 import subprocess
 import time
-from pathlib import Path
 
-CUTOFF_H = 24
-HOME = Path.home()
-OUT = Path(__file__).resolve().parent / "docs" / "status.json"
-HIST = Path(__file__).resolve().parent / "docs" / "history.json"
+REPO = os.path.dirname(os.path.abspath(__file__))
+FRAG_DIR = os.path.join(REPO, "docs", "status.d")
+HOME = os.path.expanduser("~")
 NOW = time.time()
+TS = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+CUTOFF_H = 24
 PATH = os.environ.get("PATH", "") + f":{HOME}/.local/bin:/opt/homebrew/bin"
+
+os.makedirs(FRAG_DIR, exist_ok=True)
 
 
 # ---------------------------------------------------------------- helpers ----
+def slug(label):
+    return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+
+
+def iso(epoch):
+    return time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime(epoch))
+
+
+_UNSET = object()
+
+
+def emit(label, section, color, update="", next_=None, order=500,
+         intentional=False, ts=_UNSET):
+    """ts: an ISO string, or None to omit. Agents default to this run's time
+    (freshness is the signal); services default to no ts (colour is the
+    signal, and the `update` string already carries any age that matters)."""
+    if ts is _UNSET:
+        ts = None if section == "services" else TS
+    frag = {"label": label, "section": section, "color": color}
+    if update:
+        frag["update"] = update
+    if ts:
+        frag["ts"] = ts
+    if next_:
+        frag["next"] = next_
+    frag["order"] = order
+    if intentional:
+        frag["intentional"] = True
+    path = os.path.join(FRAG_DIR, slug(label) + ".json")
+    with open(path + ".tmp", "w", encoding="utf-8") as f:
+        json.dump(frag, f, indent=2)
+        f.write("\n")
+    os.replace(path + ".tmp", path)
+
+
 def age_hours(path):
     try:
         return (NOW - os.path.getmtime(os.path.expanduser(path))) / 3600.0
@@ -55,26 +92,16 @@ def rel(h):
     return f"{int(round(h / 24))}d ago"
 
 
-def fresh(h, verb="refreshed"):
-    """(colour, terse-or-verbose note) from freshness alone."""
-    if h is None:
-        return "red", "no data found"
-    if h < CUTOFF_H:
-        return "green", rel(h)                     # terse
-    return "red", f"last {verb} {rel(h)}"          # verbose
-
-
 def run(cmd, timeout=90):
-    return subprocess.run(
-        cmd, capture_output=True, text=True, timeout=timeout,
-        env={**os.environ, "PATH": PATH},
-    )
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout,
+                          env={**os.environ, "PATH": PATH})
 
 
-def agent_state(label):
-    """(loaded, last_exit_code) -- last_exit_code is None if it never exited."""
+def agent_state(plist_label):
+    """(loaded, last_exit_code) -- exit code None if it never exited."""
     try:
-        r = run(["launchctl", "print", f"gui/{os.getuid()}/{label}"], timeout=15)
+        r = run(["launchctl", "print", f"gui/{os.getuid()}/{plist_label}"],
+                timeout=15)
     except Exception:
         return False, None
     if r.returncode != 0:
@@ -83,27 +110,14 @@ def agent_state(label):
     return True, (int(m.group(1)) if m else None)
 
 
-def item(label, color, note, h=None, intentional=False):
-    d = {"label": label, "color": color, "note": note}
-    if h is not None:
-        d["age_hours"] = round(h, 1)
-    if intentional:
-        d["intentional"] = True
-    return d
-
-
-services = []
-agents = []
-
+# ================================================================ SERVICES ==
 
 # --------------------------------------------- Claude.ai MCP connectors ----
-# MCP connectors that are deliberately not in use -- shown red but dimmed,
-# excluded from the count, and sunk to the bottom of the section.
 DIM_CONNECTORS = {
     "pitchbook": "not in use right now",
     "microsoft 365": "never connected",
 }
-
+order = 10
 try:
     text = run(["claude", "mcp", "list"]).stdout
     for line in text.splitlines():
@@ -120,18 +134,20 @@ try:
         if label.lower() in ("gmail", "google calendar", "google drive"):
             label += " (MCP)"
         s = status_part.lower()
-        dim = next((note for key, note in DIM_CONNECTORS.items()
-                    if key in label.lower()), None)
+        dim = next((n for k, n in DIM_CONNECTORS.items() if k in label.lower()),
+                   None)
         if dim:
-            services.append(item(label, "red", dim, intentional=True))
+            emit(label, "services", "red", dim, order=900, intentional=True)
         elif "connected" in s and "not" not in s:
-            services.append(item(label, "green", ""))          # terse
+            emit(label, "services", "green", order=order)
         elif "auth" in s:
-            services.append(item(label, "red", "needs authentication"))
+            emit(label, "services", "red", "needs authentication", order=order)
         else:
-            services.append(item(label, "red", "unavailable"))
+            emit(label, "services", "red", "unavailable", order=order)
+        order += 1
 except Exception as e:  # noqa: BLE001
-    services.append(item("MCP check", "red", f"could not run: {type(e).__name__}"))
+    emit("MCP check", "services", "red",
+         f"could not run: {type(e).__name__}", order=10)
 
 
 # ------------------------------------------------------------ Tailscale ----
@@ -141,94 +157,90 @@ try:
     online = (j.get("Self") or {}).get("Online")
     if state == "Running" and online:
         peers = len(j.get("Peer") or {})
-        services.append(item("Tailscale", "green",
-                             f"{peers} peer" + ("s" if peers != 1 else "")))
+        emit("Tailscale", "services", "green",
+             f"{peers} peer" + ("s" if peers != 1 else ""), order=20)
     elif state == "Running":
-        services.append(item("Tailscale", "red", "running but self offline"))
+        emit("Tailscale", "services", "red", "running but self offline", order=20)
     else:
-        services.append(item("Tailscale", "red", f"backend {state or 'stopped'}"))
+        emit("Tailscale", "services", "red",
+             f"backend {state or 'stopped'}", order=20)
 except Exception as e:  # noqa: BLE001
-    services.append(item("Tailscale", "red", f"not reachable: {type(e).__name__}"))
-
-
-# TODO: Pi RGB-matrix clock (led-clock.service) -- the plain `ssh ...
-# systemctl is-active` probe was too flaky (LAN/Tailscale both time out
-# intermittently even while the clock is visibly running). Removed until
-# there's a reliable signal (e.g. the Pi POSTing a heartbeat somewhere).
+    emit("Tailscale", "services", "red",
+         f"not reachable: {type(e).__name__}", order=20)
 
 
 # --------------------------------------------------- gws CLI e-mail ----
-for label, d in [
+for i, (label, d) in enumerate([
     ("Personal Gmail (CLI)", "~/.config/gws"),
     ("Wharton Gmail (CLI)", "~/.config/gws-wharton"),
     ("Secondary Gmail (CLI)", "~/.config/gws-unitedhvy"),
-]:
+]):
     d = os.path.expanduser(d)
     cred = os.path.join(d, "credentials.enc")
     if not os.path.exists(cred):
-        services.append(item(label, "red", "credentials missing — re-auth"))
+        emit(label, "services", "red", "credentials missing — re-auth",
+             order=30 + i)
         continue
     h = newest_age(cred, os.path.join(d, "token_cache.json"))
-    c, note = fresh(h, "token refresh")
-    services.append(item(label, c, note, h))
+    if h is not None and h < CUTOFF_H:
+        emit(label, "services", "green", f"token refreshed {rel(h)}", order=30 + i)
+    else:
+        emit(label, "services", "red", f"token stale — {rel(h)}", order=30 + i)
 
 
 # ------------------------------------------------- health data tools ----
-for label, p in [
-    ("Whoop (official API)", "~/whoop-sync/tokens.json"),
-    # no refresh flow for the internal endpoint -- staleness really does mean
-    # "go re-login", so this one stays on the age rule
-    ("Whoop (internal API)", "~/whoop-unofficial/tokens.json"),
-    ("Strava", "~/strava-sync/tokens.json"),
-]:
+for i, (label, p, verb) in enumerate([
+    ("Whoop (official API)", "~/whoop-sync/tokens.json", "token refreshed"),
+    # no refresh flow for the internal endpoint -- staleness genuinely means
+    # "go re-login", so it stays on the age rule
+    ("Whoop (internal API)", "~/whoop-unofficial/tokens.json", "token refreshed"),
+    ("Strava", "~/strava-sync/tokens.json", "token refreshed"),
+]):
     h = age_hours(p)
-    c, note = fresh(h, "token refresh")
-    services.append(item(label, c, note, h))
+    if h is not None and h < CUTOFF_H:
+        emit(label, "services", "green", f"{verb} {rel(h)}", order=40 + i)
+    else:
+        emit(label, "services", "red",
+             f"stale — last {verb.split()[-1]} {rel(h)}", order=40 + i)
 
 
-# Garmin is an on-demand CLI with no scheduled job, so file age says nothing
-# useful -- and garminconnect silently refreshes an expired access token from
-# the stored refresh token. Ping it for real instead (~1s).
+# Garmin: on-demand CLI, no scheduled job, and garminconnect silently refreshes
+# an expired access token from the stored refresh token -- so file age is
+# meaningless. Ping it for real (~1s).
 def garmin_ping():
     py = os.path.expanduser("~/garmin-sync/venv/bin/python")
     store = os.path.expanduser("~/garmin-sync/.garmintokens")
     if not os.path.exists(py):
-        return item("Garmin", "red", "sync tool not installed")
-    probe = (
-        "import garminconnect;"
-        "c=garminconnect.Garmin();"
-        f"c.login(tokenstore={store!r});"
-        "print(c.get_full_name())"
-    )
+        return "red", "sync tool not installed"
+    probe = ("import garminconnect;c=garminconnect.Garmin();"
+             f"c.login(tokenstore={store!r});print(c.get_full_name())")
     try:
-        r = subprocess.run([py, "-c", probe], capture_output=True,
-                           text=True, timeout=60)
+        r = subprocess.run([py, "-c", probe], capture_output=True, text=True,
+                           timeout=60)
     except subprocess.TimeoutExpired:
-        return item("Garmin", "red", "ping timed out")
+        return "red", "ping timed out"
     if r.returncode == 0 and r.stdout.strip():
-        return item("Garmin", "green", "")
-    err = (r.stderr or "").strip().splitlines()
-    tail = err[-1][:60] if err else "unknown error"
+        return "green", "ping ok"
+    tail = ((r.stderr or "").strip().splitlines() or ["unknown error"])[-1][:60]
     if "login" in tail.lower() or "auth" in tail.lower():
-        return item("Garmin", "red", "session expired — re-login")
-    return item("Garmin", "red", f"ping failed: {tail}")
+        return "red", "session expired — re-login"
+    return "red", f"ping failed: {tail}"
 
 
-services.append(garmin_ping())
+gc, gu = garmin_ping()
+emit("Garmin", "services", gc, gu, order=43)
 
 
 # ---------------------------------------------- notification delivery ----
-# morning-checkin and (when not paused) checkin-digest both push via the
-# same ntfy + iMessage notifiers -- freshness = the most recent of the two.
-# NB: ~/checkin/launchd.log is launchd's stdout redirect and is always 0
-# bytes -- detect_and_send.py writes its own checkin.log. Watch that one.
+# morning-checkin and (when not paused) checkin-digest push via the same
+# ntfy + iMessage notifiers -- freshness = the most recent of the two.
 notif_h = newest_age("~/checkin/checkin.log", "~/Library/Logs/checkin-digest.log")
-for label in ("ntfy push", "iMessage"):
+for i, label in enumerate(("ntfy push", "iMessage")):
     if notif_h is not None and notif_h < CUTOFF_H:
-        services.append(item(label, "green", rel(notif_h), notif_h))
+        emit(label, "services", "green", f"delivered {rel(notif_h)}", order=50 + i)
     else:
-        services.append(item(label, "red",
-                             f"no check-in run in {CUTOFF_H}h ({rel(notif_h)})", notif_h))
+        emit(label, "services", "red",
+             f"no check-in run in {CUTOFF_H}h ({rel(notif_h)})", order=50 + i)
 
 
 # --------------------------------------------------------- WhatsApp ----
@@ -236,170 +248,61 @@ wa = ("~/Library/Group Containers/group.net.whatsapp.WhatsApp.shared/"
       "ChatStorage.sqlite")
 h = age_hours(wa)
 if h is None:
-    services.append(item("WhatsApp", "red", "Desktop DB not found"))
+    emit("WhatsApp", "services", "red", "Desktop DB not found", order=55)
 elif h < CUTOFF_H:
-    services.append(item("WhatsApp", "green", rel(h), h))
+    emit("WhatsApp", "services", "green", f"Desktop synced {rel(h)}", order=55)
 else:
-    services.append(item("WhatsApp", "red",
-                         f"Desktop not syncing — DB {rel(h)}", h))
+    emit("WhatsApp", "services", "red",
+         f"Desktop not syncing — DB {rel(h)}", order=55)
 
 
-# --------------------------------------------------- launchd agents ----
-# (label, plist label, log path, schedule | False)
-# schedule = (note text, {weekday ints, Mon=0}) for an agent that fires
-# less than daily. A scheduled agent is judged by load state + last exit
-# code, not by 24h freshness; on days it isn't scheduled it shows gray
-# ("skipped") instead of green.
-AGENTS = [
-    # checkin.log, not launchd.log -- see the note by notif_h above
-    ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/checkin.log", False),
-    ("checkin-digest", "com.uttam.checkin-digest",
-     "~/Library/Logs/checkin-digest.log", False),
-    ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
-     "~/Library/Logs/import-downloads-to-photos.log", ("Mon & Thu 23:00", {0, 3})),
-    # log lives outside iCloud -- launchd can't open evicted files
-    ("strava-kudos", "com.uttam408.strava-kudos",
-     "~/Library/Logs/strava-kudos.log", False),
-    ("connector-dashboard", "com.uttam.connector-dashboard",
-     "~/Library/Logs/connector-dashboard.log", False),
-]
-# agents deliberately paused -- red, but dimmed and excluded from the count
-PAUSED = {"com.uttam.checkin-digest"}
+# ================================================================== AGENTS ==
+# Only the Mac launchd agents that don't self-report yet. morning-checkin also
+# self-reports at 6-9am (that fragment wins during the day); this 5am pass is
+# the backstop that catches it if it stops running entirely.
 
-# readable notes for known non-zero exit codes; anything else shows the code
-EXIT_HINTS = {
-    ("com.uttam408.strava-kudos", 3): "Strava session expired — re-login",
-}
+EXIT_HINTS = {("com.uttam408.strava-kudos", 3): "Strava session expired — re-login"}
 
-for label, plist_label, log, sched in AGENTS:
+
+def check_agent(label, plist_label, log, order, next_=None, run_weekdays=None):
     loaded, last_exit = agent_state(plist_label)
-    if plist_label in PAUSED:
-        agents.append(item(label, "red", "paused", intentional=True))
-        continue
+    log_epoch = None
+    try:
+        log_epoch = os.path.getmtime(os.path.expanduser(log))
+    except OSError:
+        pass
+    log_ts = iso(log_epoch) if log_epoch else None
+
     if not loaded:
-        agents.append(item(label, "red", "not loaded"))
-        continue
-    if sched:
-        note, run_days = sched
-        if last_exit in (None, 0):
-            if time.localtime(NOW).tm_wday in run_days:
-                agents.append(item(label, "green", note))
-            else:
-                agents.append(item(label, "gray", f"not scheduled — {note}"))
-        else:
-            agents.append(item(label, "red", f"last run failed (exit {last_exit})"))
-        continue
-    h = age_hours(log)
-    # a fresh log only proves it ran -- a failed run writes one too
-    if last_exit not in (None, 0):
+        emit(label, "agents", "red", "not loaded", order=order, next_=next_)
+    elif last_exit not in (None, 0):
         hint = EXIT_HINTS.get((plist_label, last_exit),
                               f"last run failed (exit {last_exit})")
-        agents.append(item(label, "red", hint, h))
-    elif h is not None and h < CUTOFF_H:
-        agents.append(item(label, "green", rel(h), h))
+        emit(label, "agents", "red", hint, order=order, next_=next_, ts=log_ts)
+    elif run_weekdays is not None:
+        # less-than-daily: judged by load + clean exit only, not freshness;
+        # gray on days it isn't scheduled so the strip doesn't imply a miss
+        if time.localtime(NOW).tm_wday in run_weekdays:
+            emit(label, "agents", "green", "", order=order, next_=next_, ts=log_ts)
+        else:
+            emit(label, "agents", "gray", "not scheduled today",
+                 order=order, next_=next_, ts=log_ts)
     else:
-        agents.append(item(label, "red", f"no run in {CUTOFF_H}h ({rel(h)})", h))
-
-# not built yet -- placeholder to keep it on the radar
-agents.append(item("WRTCbot", "red", "not set up — weekly run email still manual"))
-
-agents.append(item("strava-friends-feed", "red",
-                   "disabled — replaced by strava-kudos", intentional=True))
-agents.append(item("battery.plist", "red",
-                   "not loaded — app self-manages", intentional=True))
-
-# strava-kudos-muse: cloud cron run by Muse (not a Mac launchd agent).
-# Its status row is maintained via GitHub by the automation itself after each
-# run -- carry the previous entry forward so this regeneration never drops or
-# overwrites it.
-_skm_prev = None
-try:
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "docs", "status.json"), encoding="utf-8") as _skm_f:
-        _skm_prev_json = json.load(_skm_f)
-    _skm_prev = next(
-        _it for _sec in _skm_prev_json.get("sections", [])
-        for _it in _sec.get("items", [])
-        if _it.get("label") == "strava-kudos-muse")
-except (OSError, ValueError, StopIteration):
-    _skm_prev = None
-agents.append(_skm_prev if _skm_prev
-              else item("strava-kudos-muse", "grey", "no runs yet"))
+        h = age_hours(log)
+        if h is not None and h < CUTOFF_H:
+            emit(label, "agents", "green", "", order=order, next_=next_, ts=log_ts)
+        else:
+            emit(label, "agents", "red",
+                 f"no run in {CUTOFF_H}h ({rel(h)})", order=order, next_=next_)
 
 
-# daily-news-muse: cloud cron run by Muse (not a Mac launchd agent).
-# Its status row is maintained via GitHub by the automation itself after each
-# run -- carry the previous entry forward so this regeneration never drops or
-# overwrites it.
-_dnm_prev = None
-try:
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "docs", "status.json"), encoding="utf-8") as _dnm_f:
-        _dnm_prev_json = json.load(_dnm_f)
-    _dnm_prev = next(
-        _it for _sec in _dnm_prev_json.get("sections", [])
-        for _it in _sec.get("items", [])
-        if _it.get("label") == "daily-news-muse")
-except (OSError, ValueError, StopIteration):
-    _dnm_prev = None
-agents.append(_dnm_prev if _dnm_prev
-              else item("daily-news-muse", "grey", "no runs yet"))
+check_agent("morning-checkin", "com.uttam.morning-checkin",
+            "~/checkin/checkin.log", order=10, next_="6 AM")
+check_agent("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
+            "~/Library/Logs/import-downloads-to-photos.log", order=30,
+            next_="Mon & Thu 23:00", run_weekdays={0, 3})
 
+# connector-dashboard reporting its own run
+emit("connector-dashboard", "agents", "green", "checked", order=40, next_="5 AM")
 
-# dimmed / intentionally-off entries sink to the bottom of their section
-def sink(lst):
-    return ([i for i in lst if not i.get("intentional")] +
-            [i for i in lst if i.get("intentional")])
-
-
-services = sink(services)
-agents = sink(agents)
-
-
-# ------------------------------------------- 7-day per-item lookback ----
-# HIST maps "YYYY-MM-DD" (local) -> {label: "green"|"red"}. One entry per
-# day; a second run the same day overwrites it. Each item then carries a
-# `history` list of LOOKBACK_DAYS colours, oldest first, None where we have
-# no record, so the page can draw a strip of squares with no extra fetch.
-LOOKBACK_DAYS = 5
-today = time.strftime("%Y-%m-%d", time.localtime(NOW))
-
-hist = {}
-if HIST.exists():
-    try:
-        hist = json.loads(HIST.read_text())
-    except ValueError:
-        hist = {}
-
-hist[today] = {i["label"]: i["color"]
-               for s in (services, agents) for i in s}
-# keep a little more than we render, so widening LOOKBACK_DAYS isn't lossy
-for stale in sorted(hist)[:-(LOOKBACK_DAYS * 3)]:
-    del hist[stale]
-HIST.write_text(json.dumps(hist, indent=2, sort_keys=True) + "\n")
-
-days = [time.strftime("%Y-%m-%d",
-                      time.localtime(NOW - d * 86400))
-        for d in range(LOOKBACK_DAYS - 1, -1, -1)]
-for section in (services, agents):
-    for i in section:
-        i["history"] = [hist.get(d, {}).get(i["label"]) for d in days]
-
-
-# ------------------------------------------------------------- write ----
-payload = {
-    "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(NOW)),
-    "cutoff_hours": CUTOFF_H,
-    "lookback_days": LOOKBACK_DAYS,
-    "sections": [
-        {"name": "services", "items": services},
-        {"name": "agents", "items": agents},
-    ],
-}
-OUT.write_text(json.dumps(payload, indent=2) + "\n")
-
-g = sum(1 for s in payload["sections"] for i in s["items"]
-        if i["color"] == "green" and not i.get("intentional"))
-r = sum(1 for s in payload["sections"] for i in s["items"]
-        if i["color"] == "red" and not i.get("intentional"))
-print(f"{g} green / {r} red  ->  {OUT}")
+print(f"wrote fragments -> {os.path.relpath(FRAG_DIR, REPO)}/")

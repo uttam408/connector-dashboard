@@ -14,7 +14,7 @@
     margin: 0; background: var(--bg); color: var(--fg);
     font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  main { max-width: 660px; margin: 0 auto; padding: 40px 20px 80px; }
+  main { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
   h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: .02em; }
   .meta { color: var(--dim); margin: 2px 0 28px; font-size: 12px; }
   h2 {
@@ -31,7 +31,6 @@
           overflow: hidden; text-overflow: ellipsis; }
   li.off { opacity: .4; }
   .err { color: #d1343b; }
-  /* narrow screens: drop the oldest days rather than squashing the label */
   @media (max-width: 560px) { li .h i:nth-child(-n+2) { display: none; } }
   @media (max-width: 430px) { li .h i:nth-child(-n+3) { display: none; } }
 </style>
@@ -43,74 +42,148 @@
   <div id="body"></div>
 </main>
 <script>
+const REPO = "uttam408/connector-dashboard";
+const FRAG_DIR = "status.d";                       // relative to this page
 const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", gray: "\u{1F4A4}", none: "⬜" };
 const WORD = { green: "ok", red: "failed", gray: "skipped" };
+const SECTIONS = ["services", "agents"];
+const LIST_TTL = 10 * 60 * 1000;                   // re-list the dir this often
+const LOOKBACK = 5;
+
 function ago(iso) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 0) return "just now";
   if (s < 3600) return Math.max(1, Math.round(s / 60)) + "m ago";
   if (s < 172800) return Math.round(s / 3600) + "h ago";
   return Math.round(s / 86400) + "d ago";
 }
-let generatedAt = null;
-// Items with a `ts` (ISO 8601 run timestamp) and "{ago}" in their note get a
-// live relative time, re-rendered on every tick like the header above.
-const liveNotes = [];
-function liveNote(it) {
-  const note = it.note || "";
-  return (it.ts && note.includes("{ago}"))
-    ? note.replace("{ago}", ago(it.ts))
-    : note;
+function localDay(offsetDays) {
+  const d = new Date(Date.now() - offsetDays * 86400000);
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
+    "-" + String(d.getDate()).padStart(2, "0");
 }
-function tick() {
-  if (generatedAt) document.getElementById("meta").textContent =
-    "updated " + ago(generatedAt);
-  for (const [it, el] of liveNotes) el.textContent = liveNote(it);
-}
-async function load() {
-  let d;
-  try { d = await fetch("status.json?_=" + Date.now()).then(r => r.json()); }
-  catch (e) {
-    document.getElementById("meta").innerHTML =
-      '<span class="err">status.json not available yet</span>';
-    return;
+
+// --- fragment discovery -----------------------------------------------------
+// Prefer the GitHub API directory listing (fully dynamic). Fall back to the
+// union of every label ever seen in history.json if the API is unreachable
+// or rate-limited, so the page still renders offline.
+async function listFragments(history) {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("frag-list") || "null");
+    if (cached && Date.now() - cached.t < LIST_TTL) return cached.names;
+  } catch (e) { /* ignore */ }
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/docs/${FRAG_DIR}`,
+      { headers: { Accept: "application/vnd.github+json" } });
+    if (!r.ok) throw new Error(r.status);
+    const names = (await r.json())
+      .filter(f => f.name.endsWith(".json")).map(f => f.name);
+    try { sessionStorage.setItem("frag-list",
+      JSON.stringify({ t: Date.now(), names })); } catch (e) { /* ignore */ }
+    return names;
+  } catch (e) {
+    const labels = new Set();
+    for (const day of Object.values(history || {}))
+      for (const label of Object.keys(day)) labels.add(label);
+    return [...labels].map(l =>
+      l.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".json");
   }
-  generatedAt = d.generated;
-  tick();
+}
+
+// --- render ---------------------------------------------------------------
+let rows = [];                 // [{frag, dEl}] for live "x ago" re-ticking
+let history = {};
+
+function noteFor(f) {
+  const parts = [];
+  if (f.update) parts.push(f.update);
+  if (f.ts) parts.push(ago(f.ts));
+  if (f.next) parts.push("next " + f.next);
+  return parts.join(" | ");
+}
+function colorFor(f) {
+  if (f.stale_hours && f.ts &&
+      Date.now() - new Date(f.ts).getTime() > f.stale_hours * 3600000)
+    return "red";
+  return f.color || "red";
+}
+
+function strip(label) {
+  let out = "";
+  for (let i = LOOKBACK - 1; i >= 0; i--) {
+    const c = (history[localDay(i)] || {})[label];
+    const when = i === 0 ? "today" : i === 1 ? "yesterday" : i + " days ago";
+    out += c
+      ? `<i title="${when}: ${WORD[c] || c}">${SQ[c] || SQ.none}</i>`
+      : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
+  }
+  return out;
+}
+
+function tick() {
+  for (const { frag, dEl } of rows) if (frag.ts) dEl.textContent = noteFor(frag);
+}
+
+function render(frags) {
   const body = document.getElementById("body");
   body.innerHTML = "";
-  liveNotes.length = 0;
-  for (const sec of d.sections) {
+  rows = [];
+  let green = 0, red = 0;
+
+  for (const section of SECTIONS) {
+    const items = frags.filter(f => (f.section || "agents") === section)
+      .sort((a, b) =>
+        (!!a.intentional - !!b.intentional) ||
+        ((a.order ?? 500) - (b.order ?? 500)) ||
+        a.label.localeCompare(b.label));
+    if (!items.length) continue;
+
     const h2 = document.createElement("h2");
-    h2.textContent = sec.name;
+    h2.textContent = section;
     const ul = document.createElement("ul");
-    for (const it of sec.items) {
+    for (const f of items) {
+      const color = colorFor(f);
+      if (!f.intentional) { if (color === "green") green++; else if (color === "red") red++; }
       const li = document.createElement("li");
-      if (it.intentional) li.className = "off";
-      // 7-day strip, oldest -> today. Rightmost square is the current state.
-      const hist = it.history || [it.color];
-      const strip = hist.map((c, n) => {
-        const days = hist.length - 1 - n;
-        const when = days === 0 ? "today"
-          : days === 1 ? "yesterday" : days + " days ago";
-        return c
-          ? `<i title="${when}: ${WORD[c] || c}">${SQ[c]}</i>`
-          : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
-      }).join("");
-      li.innerHTML = `<span class="h">${strip}</span>` +
+      if (f.intentional) li.className = "off";
+      li.innerHTML = `<span class="h">${strip(f.label)}</span>` +
         `<span class="n"></span><span class="d"></span>`;
-      li.querySelector(".n").textContent = it.label;
+      li.querySelector(".n").textContent = f.label;
       const dEl = li.querySelector(".d");
-      dEl.textContent = liveNote(it);
-      if (it.ts && (it.note || "").includes("{ago}")) liveNotes.push([it, dEl]);
+      dEl.textContent = noteFor(f);
+      rows.push({ frag: f, dEl });
       ul.appendChild(li);
     }
     body.appendChild(h2);
     body.appendChild(ul);
   }
+  document.getElementById("meta").textContent =
+    `${green} ok · ${red} failed · refreshed ${ago(new Date().toISOString())}`;
 }
+
+async function load() {
+  try {
+    history = await fetch("history.json?_=" + Date.now()).then(r => r.json());
+  } catch (e) { history = {}; }
+
+  const names = await listFragments(history);
+  const frags = (await Promise.all(names.map(n =>
+    fetch(`${FRAG_DIR}/${n}?_=` + Date.now())
+      .then(r => r.ok ? r.json() : null).catch(() => null))))
+    .filter(f => f && f.label);
+
+  if (!frags.length) {
+    document.getElementById("meta").innerHTML =
+      '<span class="err">no status fragments found</span>';
+    return;
+  }
+  render(frags);
+}
+
 load();
 setInterval(tick, 30 * 1000);
-setInterval(load, 30 * 60 * 1000);
+setInterval(load, 2 * 60 * 1000);
 </script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+{
+  "label": "checkin-digest",
+  "section": "agents",
+  "color": "red",
+  "update": "paused",
+  "order": 20,
+  "intentional": true
+}

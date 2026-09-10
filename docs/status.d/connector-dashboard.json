@@ -1,0 +1,9 @@
+{
+  "label": "connector-dashboard",
+  "section": "agents",
+  "color": "green",
+  "update": "checked",
+  "ts": "2026-09-10T11:50:24-0400",
+  "next": "5 AM",
+  "order": 40
+}

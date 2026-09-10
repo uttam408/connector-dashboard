@@ -1,0 +1,8 @@
+{
+  "label": "battery.plist",
+  "section": "agents",
+  "color": "red",
+  "update": "not loaded — app self-manages",
+  "order": 920,
+  "intentional": true
+}

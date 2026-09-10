@@ -1,9 +1,10 @@
 #!/bin/bash
 # Wrapper invoked by the launchd agent daily at 05:00.
-# Merges this morning's cloud pushes before running the checker, commits
-# docs/ if it changed, then pushes whatever is ahead of origin -- retrying,
-# because the Mac is often still bringing its network up at 05:00 and the
-# first push can time out on DNS.
+# Runs check.py (which writes this Mac's status fragments to docs/status.d/),
+# commits any that changed, and pushes -- rebasing in the retry loop because
+# other agents push their own fragments concurrently, and because the Mac is
+# often still bringing its network up at 05:00 (a bare git call blocks ~7 min
+# on DNS).
 set -uo pipefail
 
 cd "$(dirname "$0")"
@@ -19,10 +20,9 @@ for attempt in 1 2 3 4 5 6; do
   sleep 60
 done
 
-# pull this morning's cloud pushes so the health check sees them;
-# skipped when it wouldn't fast-forward
+# pick up other agents' fragment pushes before regenerating ours
 git fetch -q origin main 2>/dev/null || true
-git merge --ff-only -q origin/main 2>/dev/null || echo "merge skipped — local ahead of origin"
+git merge --ff-only -q origin/main 2>/dev/null || echo "merge skipped — local ahead"
 
 /usr/bin/python3 check.py || { echo "check.py failed $(date -u +%FT%TZ)"; exit 1; }
 
@@ -30,19 +30,18 @@ if ! git diff --quiet -- docs/ ; then
   git add docs/
   git -c user.name="connector-dashboard bot" \
       -c user.email="uttam408@users.noreply.github.com" \
-      commit -q -m "status: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      commit -q -m "status: mac fragments $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 fi
 
-# push if we're ahead of origin -- covers today's commit plus any commit
-# stranded by a previous failed push.
-git fetch -q origin main 2>/dev/null || true
 if [ -z "$(git rev-list origin/main..HEAD 2>/dev/null)" ]; then
   echo "nothing to push $(date -u +%FT%TZ)"
   exit 0
 fi
 
 for attempt in 1 2 3 4 5; do
-  if git push -q origin main 2>/dev/null; then
+  git fetch -q origin main 2>/dev/null || true
+  git rebase -q origin/main 2>/dev/null || { git rebase --abort 2>/dev/null; true; }
+  if git push -q origin HEAD:main 2>/dev/null; then
     echo "pushed (attempt $attempt) $(date -u +%FT%TZ)"
     exit 0
   fi

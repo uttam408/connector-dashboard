@@ -1,0 +1,7 @@
+{
+  "label": "Tailscale",
+  "section": "services",
+  "color": "green",
+  "update": "3 peers",
+  "order": 20
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Microsoft 365",
+  "section": "services",
+  "color": "red",
+  "update": "never connected",
+  "order": 900,
+  "intentional": true
+}
