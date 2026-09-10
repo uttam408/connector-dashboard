@@ -292,7 +292,8 @@
         {
           "label": "strava-kudos-muse",
           "color": "green",
-          "note": "gave 2 kudos | 55m ago | next Sat 6:35 PM",
+          "ts": "2026-09-10T10:11:00-04:00",
+          "note": "gave 2 kudos | {ago} | next Sat 6:35 PM",
           "history": [
             null,
             null,
@@ -304,7 +305,8 @@
         {
           "label": "daily-news-muse",
           "color": "green",
-          "note": "digest sent | 4h ago | next Fri 7:00 AM",
+          "ts": "2026-09-10T07:00:00-04:00",
+          "note": "digest sent | {ago} | next Fri 7:00 AM",
           "history": [
             null,
             null,

@@ -52,9 +52,19 @@ function ago(iso) {
   return Math.round(s / 86400) + "d ago";
 }
 let generatedAt = null;
+// Items with a `ts` (ISO 8601 run timestamp) and "{ago}" in their note get a
+// live relative time, re-rendered on every tick like the header above.
+const liveNotes = [];
+function liveNote(it) {
+  const note = it.note || "";
+  return (it.ts && note.includes("{ago}"))
+    ? note.replace("{ago}", ago(it.ts))
+    : note;
+}
 function tick() {
   if (generatedAt) document.getElementById("meta").textContent =
     "updated " + ago(generatedAt);
+  for (const [it, el] of liveNotes) el.textContent = liveNote(it);
 }
 async function load() {
   let d;
@@ -68,6 +78,7 @@ async function load() {
   tick();
   const body = document.getElementById("body");
   body.innerHTML = "";
+  liveNotes.length = 0;
   for (const sec of d.sections) {
     const h2 = document.createElement("h2");
     h2.textContent = sec.name;
@@ -88,7 +99,9 @@ async function load() {
       li.innerHTML = `<span class="h">${strip}</span>` +
         `<span class="n"></span><span class="d"></span>`;
       li.querySelector(".n").textContent = it.label;
-      li.querySelector(".d").textContent = it.note || "";
+      const dEl = li.querySelector(".d");
+      dEl.textContent = liveNote(it);
+      if (it.ts && (it.note || "").includes("{ago}")) liveNotes.push([it, dEl]);
       ul.appendChild(li);
     }
     body.appendChild(h2);
