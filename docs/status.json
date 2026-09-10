@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10T12:45:06Z",
+  "generated": "2026-09-10T12:45:29Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -159,7 +159,7 @@
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "42m ago",
+          "note": "43m ago",
           "age_hours": 0.7,
           "history": [
             "red",
@@ -172,7 +172,7 @@
         {
           "label": "iMessage",
           "color": "green",
-          "note": "42m ago",
+          "note": "43m ago",
           "age_hours": 0.7,
           "history": [
             "red",
@@ -229,7 +229,7 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "42m ago",
+          "note": "43m ago",
           "age_hours": 0.7,
           "history": [
             "red",
