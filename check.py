@@ -4,7 +4,8 @@ check.py -- probe every service / credential / launchd agent this machine
 depends on and emit a SANITIZED status file for the GitHub Pages dashboard.
 
 Rule: an entry is GREEN only if it has been refreshed within the last 24h
-(CUTOFF_H). Otherwise RED. Live daemons (MCP connectors, Tailscale) are
+(CUTOFF_H). Otherwise RED. GRAY means skipped -- a less-than-daily agent on
+a day it isn't scheduled to run. Live daemons (MCP connectors, Tailscale) are
 judged by a health check instead. Intentionally-off entries are marked so
 the page can dim them, and sink to the bottom of their section.
 
@@ -244,16 +245,18 @@ else:
 
 
 # --------------------------------------------------- launchd agents ----
-# (label, plist label, log path, schedule_note | False)
-# an agent with a schedule_note fires less than daily -- judge it by whether
-# it's loaded and last exited cleanly, not by 24h freshness.
+# (label, plist label, log path, schedule | False)
+# schedule = (note text, {weekday ints, Mon=0}) for an agent that fires
+# less than daily. A scheduled agent is judged by load state + last exit
+# code, not by 24h freshness; on days it isn't scheduled it shows gray
+# ("skipped") instead of green.
 AGENTS = [
     # checkin.log, not launchd.log -- see the note by notif_h above
     ("morning-checkin", "com.uttam.morning-checkin", "~/checkin/checkin.log", False),
     ("checkin-digest", "com.uttam.checkin-digest",
      "~/Library/Logs/checkin-digest.log", False),
     ("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
-     "~/Library/Logs/import-downloads-to-photos.log", "Mon & Thu 23:00"),
+     "~/Library/Logs/import-downloads-to-photos.log", ("Mon & Thu 23:00", {0, 3})),
     # log lives outside iCloud -- launchd can't open evicted files
     ("strava-kudos", "com.uttam408.strava-kudos",
      "~/Library/Logs/strava-kudos.log", False),
@@ -268,7 +271,7 @@ EXIT_HINTS = {
     ("com.uttam408.strava-kudos", 3): "Strava session expired — re-login",
 }
 
-for label, plist_label, log, sched_note in AGENTS:
+for label, plist_label, log, sched in AGENTS:
     loaded, last_exit = agent_state(plist_label)
     if plist_label in PAUSED:
         agents.append(item(label, "red", "paused", intentional=True))
@@ -276,9 +279,13 @@ for label, plist_label, log, sched_note in AGENTS:
     if not loaded:
         agents.append(item(label, "red", "not loaded"))
         continue
-    if sched_note:
+    if sched:
+        note, run_days = sched
         if last_exit in (None, 0):
-            agents.append(item(label, "green", sched_note))
+            if time.localtime(NOW).tm_wday in run_days:
+                agents.append(item(label, "green", note))
+            else:
+                agents.append(item(label, "gray", f"not scheduled — {note}"))
         else:
             agents.append(item(label, "red", f"last run failed (exit {last_exit})"))
         continue
@@ -307,7 +314,7 @@ agents.append(item("battery.plist", "red",
 _skm = os.path.expanduser("~/shared-context/strava-kudos-muse.md")
 _skm_h = age_hours(_skm)
 if _skm_h is None:
-    agents.append(item("strava-kudos-muse", "grey", "no local mirror"))
+    agents.append(item("strava-kudos-muse", "gray", "no local mirror"))
 elif _skm_h < 80:
     agents.append(item("strava-kudos-muse", "green", rel(_skm_h), _skm_h))
 else:

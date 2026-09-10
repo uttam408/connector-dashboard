@@ -34,10 +34,14 @@ evidence of a problem. Whoop's **internal** API deliberately stays on the age
 rule: that endpoint has no refresh flow, so staleness there really does mean
 "go re-login".
 
-Agents that fire less than daily (`import-downloads-to-photos`) are green if
-loaded and last exited cleanly. Intentionally-off entries (`PitchBook Premium`,
-`checkin-digest` (paused), `strava-friends-feed`, `battery.plist`) are
-dimmed, excluded from the count, and sink to the bottom of their section.
+Agents that fire less than daily (`import-downloads-to-photos`, Mon & Thu
+23:00) are judged by load state + last exit code, not 24h freshness: green
+on a scheduled day if loaded and last exited cleanly, red if the last run
+failed — and gray (💤, "skipped") on days they aren't scheduled, so the
+history strip doesn't lie. Gray is excluded from the green/red counts.
+Intentionally-off entries (`PitchBook Premium`, `checkin-digest` (paused),
+`strava-friends-feed`, `battery.plist`) are dimmed, excluded from the
+count, and sink to the bottom of their section.
 
 Green rows show only their age (or nothing); red rows stay verbose.
 
@@ -48,9 +52,10 @@ square is the current state. `docs/history.json` keeps one record per
 calendar day (`{"YYYY-MM-DD": {label: colour}}`, last run of the day wins)
 and `check.py` folds the last `LOOKBACK_DAYS` into each item as `history`,
 so the page needs no extra fetch. `⬜` means no record for that day — the
-item didn't exist yet, or the job didn't run. Hover a square for the date
-and state. On narrow screens the oldest days drop off via CSS rather than
-squashing the label.
+item didn't exist yet, or the job didn't run. `💤` means skipped — a
+less-than-daily agent on a day it wasn't scheduled. Hover a square for the
+date and state. On narrow screens the oldest days drop off via CSS rather
+than squashing the label.
 
 `history.json` retains 3× the rendered window, so widening `LOOKBACK_DAYS`
 back out doesn't lose days that were already recorded.

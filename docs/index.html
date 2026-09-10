@@ -43,7 +43,8 @@
   <div id="body"></div>
 </main>
 <script>
-const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", none: "⬜" };
+const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", gray: "\u{1F4A4}", none: "⬜" };
+const WORD = { green: "ok", red: "failed", gray: "skipped" };
 function ago(iso) {
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
   if (s < 3600) return Math.max(1, Math.round(s / 60)) + "m ago";
@@ -81,7 +82,7 @@ async function load() {
         const when = days === 0 ? "today"
           : days === 1 ? "yesterday" : days + " days ago";
         return c
-          ? `<i title="${when}: ${c}">${SQ[c]}</i>`
+          ? `<i title="${when}: ${WORD[c] || c}">${SQ[c]}</i>`
           : `<i class="gap" title="${when}: no record">${SQ.none}</i>`;
       }).join("");
       li.innerHTML = `<span class="h">${strip}</span>` +

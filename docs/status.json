@@ -291,7 +291,7 @@
         },
         {
           "label": "strava-kudos-muse",
-          "color": "grey",
+          "color": "gray",
           "note": "no local mirror",
           "history": [
             null,
