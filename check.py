@@ -268,6 +268,18 @@ EXIT_HINTS = {
     ("com.uttam408.strava-kudos", 3): "Strava session expired — re-login",
 }
 
+# strava-kudos-muse: cloud cron run by Muse (not a Mac launchd agent).
+# Health = freshness of its run log in the private shared-context repo.
+# Clone that repo to ~/shared-context on this Mac for this check to go green.
+_skm = os.path.expanduser("~/shared-context/strava-kudos-muse.md")
+_skm_h = age_hours(_skm)
+if _skm_h is None:
+    services.append(item("strava-kudos-muse", "grey", "no local mirror"))
+elif _skm_h < 80:
+    services.append(item("strava-kudos-muse", "green", rel(_skm_h), _skm_h))
+else:
+    services.append(item("strava-kudos-muse", "red", f"no run in 80h ({rel(_skm_h)})", _skm_h))
+
 for label, plist_label, log, sched_note in AGENTS:
     loaded, last_exit = agent_state(plist_label)
     if plist_label in PAUSED:
