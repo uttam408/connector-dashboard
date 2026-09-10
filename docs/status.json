@@ -304,7 +304,7 @@
         {
           "label": "daily-news-muse",
           "color": "green",
-          "note": "heartbeat OK \u00b7 digest sent daily",
+          "note": "digest sent | 4h ago | next Fri 7:00 AM",
           "history": [
             null,
             null,
