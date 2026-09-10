@@ -190,7 +190,7 @@
     "Microsoft 365": "red",
     "Personal Gmail (CLI)": "green",
     "PitchBook Premium": "red",
-    "Playwright": "red",
+    "Playwright": "green",
     "Secondary Gmail (CLI)": "green",
     "Strava": "green",
     "Tailscale": "green",
@@ -207,6 +207,6 @@
     "morning-checkin": "green",
     "ntfy push": "green",
     "strava-friends-feed": "red",
-    "strava-kudos": "green"
+    "strava-kudos": "red"
   }
 }

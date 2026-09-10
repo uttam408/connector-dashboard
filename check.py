@@ -263,6 +263,11 @@ AGENTS = [
 # agents deliberately paused -- red, but dimmed and excluded from the count
 PAUSED = {"com.uttam.checkin-digest"}
 
+# readable notes for known non-zero exit codes; anything else shows the code
+EXIT_HINTS = {
+    ("com.uttam408.strava-kudos", 3): "Strava session expired — re-login",
+}
+
 for label, plist_label, log, sched_note in AGENTS:
     loaded, last_exit = agent_state(plist_label)
     if plist_label in PAUSED:
@@ -278,7 +283,12 @@ for label, plist_label, log, sched_note in AGENTS:
             agents.append(item(label, "red", f"last run failed (exit {last_exit})"))
         continue
     h = age_hours(log)
-    if h is not None and h < CUTOFF_H:
+    # a fresh log only proves it ran -- a failed run writes one too
+    if last_exit not in (None, 0):
+        hint = EXIT_HINTS.get((plist_label, last_exit),
+                              f"last run failed (exit {last_exit})")
+        agents.append(item(label, "red", hint, h))
+    elif h is not None and h < CUTOFF_H:
         agents.append(item(label, "green", rel(h), h))
     else:
         agents.append(item(label, "red", f"no run in {CUTOFF_H}h ({rel(h)})", h))

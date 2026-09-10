@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10T09:04:36Z",
+  "generated": "2026-09-10T12:45:06Z",
   "cutoff_hours": 24,
   "lookback_days": 5,
   "sections": [
@@ -44,14 +44,14 @@
         },
         {
           "label": "Playwright",
-          "color": "red",
-          "note": "unavailable",
+          "color": "green",
+          "note": "",
           "history": [
             "green",
             "red",
             "green",
             "green",
-            "red"
+            "green"
           ]
         },
         {
@@ -69,8 +69,8 @@
         {
           "label": "Personal Gmail (CLI)",
           "color": "green",
-          "note": "16h ago",
-          "age_hours": 15.7,
+          "note": "19h ago",
+          "age_hours": 19.4,
           "history": [
             "green",
             "red",
@@ -82,8 +82,8 @@
         {
           "label": "Wharton Gmail (CLI)",
           "color": "green",
-          "note": "19h ago",
-          "age_hours": 18.8,
+          "note": "23h ago",
+          "age_hours": 22.5,
           "history": [
             "red",
             "red",
@@ -95,8 +95,8 @@
         {
           "label": "Secondary Gmail (CLI)",
           "color": "green",
-          "note": "16h ago",
-          "age_hours": 15.7,
+          "note": "19h ago",
+          "age_hours": 19.4,
           "history": [
             "red",
             "red",
@@ -108,8 +108,8 @@
         {
           "label": "Whoop (official API)",
           "color": "green",
-          "note": "23h ago",
-          "age_hours": 23.1,
+          "note": "3h ago",
+          "age_hours": 2.5,
           "history": [
             "green",
             "green",
@@ -121,8 +121,8 @@
         {
           "label": "Whoop (internal API)",
           "color": "green",
-          "note": "16h ago",
-          "age_hours": 15.8,
+          "note": "19h ago",
+          "age_hours": 19.5,
           "history": [
             "red",
             "red",
@@ -134,8 +134,8 @@
         {
           "label": "Strava",
           "color": "green",
-          "note": "23h ago",
-          "age_hours": 23.1,
+          "note": "3h ago",
+          "age_hours": 2.5,
           "history": [
             "green",
             "green",
@@ -159,8 +159,8 @@
         {
           "label": "ntfy push",
           "color": "green",
-          "note": "20h ago",
-          "age_hours": 20.1,
+          "note": "42m ago",
+          "age_hours": 0.7,
           "history": [
             "red",
             "red",
@@ -172,8 +172,8 @@
         {
           "label": "iMessage",
           "color": "green",
-          "note": "20h ago",
-          "age_hours": 20.1,
+          "note": "42m ago",
+          "age_hours": 0.7,
           "history": [
             "red",
             "red",
@@ -185,8 +185,8 @@
         {
           "label": "WhatsApp",
           "color": "green",
-          "note": "5h ago",
-          "age_hours": 4.7,
+          "note": "3m ago",
+          "age_hours": 0.0,
           "history": [
             "red",
             "red",
@@ -229,8 +229,8 @@
         {
           "label": "morning-checkin",
           "color": "green",
-          "note": "20h ago",
-          "age_hours": 20.1,
+          "note": "42m ago",
+          "age_hours": 0.7,
           "history": [
             "red",
             "red",
@@ -253,22 +253,22 @@
         },
         {
           "label": "strava-kudos",
-          "color": "green",
-          "note": "1h ago",
-          "age_hours": 1.0,
+          "color": "red",
+          "note": "Strava session expired \u2014 re-login",
+          "age_hours": 4.7,
           "history": [
             "red",
             "red",
             "red",
             "green",
-            "green"
+            "red"
           ]
         },
         {
           "label": "connector-dashboard",
           "color": "green",
-          "note": "16h ago",
-          "age_hours": 15.6,
+          "note": "4h ago",
+          "age_hours": 3.5,
           "history": [
             "green",
             "red",
