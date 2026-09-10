@@ -290,6 +290,18 @@
           ]
         },
         {
+          "label": "strava-kudos-muse",
+          "color": "grey",
+          "note": "no local mirror",
+          "history": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
           "label": "checkin-digest",
           "color": "red",
           "note": "paused",
