@@ -302,6 +302,18 @@
           ]
         },
         {
+          "label": "daily-news-muse",
+          "color": "green",
+          "note": "heartbeat OK \u00b7 digest sent daily",
+          "history": [
+            null,
+            null,
+            null,
+            null,
+            "green"
+          ]
+        },
+        {
           "label": "checkin-digest",
           "color": "red",
           "note": "paused",

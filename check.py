@@ -328,30 +328,22 @@ agents.append(_skm_prev if _skm_prev
 
 
 # daily-news-muse: cloud cron run by Muse (not a Mac launchd agent).
-# It appends one timestamp line to daily-news-muse.log each morning after
-# sending the digest -- heartbeat only, no digest content is published.
-# Health = commit age of the newest heartbeat (run.sh merges origin/main
-# before check.py, so this morning's push is in the working tree).
-def _dnm_age_h():
-    try:
-        r = run(["git", "log", "-1", "--format=%ct", "--",
-                 str(Path(__file__).resolve().parent / "daily-news-muse.log")],
-                timeout=15)
-        if r.returncode != 0 or not r.stdout.strip():
-            return None
-        return (NOW - int(r.stdout.strip())) / 3600.0
-    except Exception:
-        return None
-
-
-_dnm_h = _dnm_age_h()
-if _dnm_h is None:
-    agents.append(item("daily-news-muse", "red", "no heartbeat yet"))
-elif _dnm_h < 30:
-    agents.append(item("daily-news-muse", "green", rel(_dnm_h), _dnm_h))
-else:
-    agents.append(item("daily-news-muse", "red",
-                       f"no heartbeat in 30h ({rel(_dnm_h)})", _dnm_h))
+# Its status row is maintained via GitHub by the automation itself after each
+# run -- carry the previous entry forward so this regeneration never drops or
+# overwrites it.
+_dnm_prev = None
+try:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "docs", "status.json"), encoding="utf-8") as _dnm_f:
+        _dnm_prev_json = json.load(_dnm_f)
+    _dnm_prev = next(
+        _it for _sec in _dnm_prev_json.get("sections", [])
+        for _it in _sec.get("items", [])
+        if _it.get("label") == "daily-news-muse")
+except (OSError, ValueError, StopIteration):
+    _dnm_prev = None
+agents.append(_dnm_prev if _dnm_prev
+              else item("daily-news-muse", "grey", "no runs yet"))
 
 
 # dimmed / intentionally-off entries sink to the bottom of their section
