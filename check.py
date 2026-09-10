@@ -23,6 +23,7 @@ import os
 import re
 import subprocess
 import time
+from datetime import datetime, timedelta
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(REPO, "docs", "status.d")
@@ -253,12 +254,28 @@ else:
 EXIT_HINTS = {("com.uttam408.strava-kudos", 3): "Strava session expired — re-login"}
 
 
-def check_agent(label, plist_label, log, order, next_=None, run_weekdays=None):
+def next_instance(weekdays, hour):
+    """Concrete next scheduled run as e.g. 'tonight 11 PM', 'Thu 11 PM'."""
+    now = datetime.now()
+    ampm = f"{hour % 12 or 12} {'AM' if hour < 12 else 'PM'}"
+    for d in range(0, 8):
+        cand = (now + timedelta(days=d)).replace(
+            hour=hour, minute=0, second=0, microsecond=0)
+        if cand.weekday() in weekdays and cand > now:
+            return {0: "tonight", 1: "tomorrow"}.get(d, cand.strftime("%a")) \
+                + " " + ampm
+    return None
+
+
+def check_agent(label, plist_label, log, order, next_=None,
+                run_weekdays=None, run_hour=23):
     loaded, last_exit = agent_state(plist_label)
     try:
         log_ts = iso(os.path.getmtime(os.path.expanduser(log)))
     except OSError:
         log_ts = None
+    if run_weekdays is not None:
+        next_ = next_instance(run_weekdays, run_hour)
 
     if not loaded:
         record(label, "agents", "red", "not loaded", order=order, next_=next_)
@@ -285,7 +302,7 @@ check_agent("morning-checkin", "com.uttam.morning-checkin",
             "~/checkin/checkin.log", order=10, next_="6 AM")
 check_agent("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
             "~/Library/Logs/import-downloads-to-photos.log", order=30,
-            next_="Mon & Thu 23:00", run_weekdays={0, 3})
+            run_weekdays={0, 3}, run_hour=23)
 record("connector-dashboard", "agents", "green", "checked", order=40, next_="5 AM")
 
 
