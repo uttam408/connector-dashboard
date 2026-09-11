@@ -14,7 +14,7 @@
     margin: 0; background: var(--bg); color: var(--fg);
     font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  main { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+  main { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
   h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: .02em; }
   .meta { color: var(--dim); margin: 2px 0 28px; font-size: 12px; }
   h2 {
@@ -22,13 +22,14 @@
     text-transform: uppercase; letter-spacing: .08em;
   }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; gap: 10px; white-space: nowrap; }
+  li { display: flex; gap: 10px; flex-wrap: wrap; white-space: nowrap; }
   li .h { letter-spacing: 1px; flex: none; }
   li .h i { font-style: normal; }
   li .h i.gap { opacity: .25; }
   li .n { overflow: hidden; text-overflow: ellipsis; }
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
-          overflow: hidden; text-overflow: ellipsis; }
+          white-space: normal; overflow-wrap: anywhere; min-width: 0;
+          flex: 0 1 auto; }
   li.off { opacity: .4; }
   .err { color: #d1343b; }
   @media (max-width: 560px) { li .h i:nth-child(-n+2) { display: none; } }
