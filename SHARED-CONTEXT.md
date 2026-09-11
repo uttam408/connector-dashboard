@@ -10,6 +10,16 @@ in (`docs/STATUS-FORMAT.md`, `README.md`) and link it.
 
 ---
 
+### 2026-09-11 — WRTCbot collapsed back to one row for both halves
+
+(Supersedes the entry directly below.) K'far order sync is NOT a separate
+row — both halves (Thu 8am member-email draft, local launchd; Fri 5pm
+K'far coffee-sync draft, cloud routine) write into the same `wrtcbot.jsonl`.
+The two runs are different day+time pairs with no clean `schedule` grammar
+cross-product, so the header has no `schedule` — each run instead sets a
+literal `--next` pointing at the other half ("Thu 8 AM (email)" / "Fri 5 PM
+(coffee)"). `stale_hours: 170` covers the longer Fri→Thu gap.
+
 ### 2026-09-11 — WRTCbot is real now; added K'far order sync row
 
 `wrtcbot.json` stub ("not built yet") replaced with `wrtcbot.jsonl` — the
