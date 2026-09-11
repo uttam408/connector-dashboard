@@ -10,6 +10,19 @@ in (`docs/STATUS-FORMAT.md`, `README.md`) and link it.
 
 ---
 
+### 2026-09-11 — WRTCbot is real now; added K'far order sync row
+
+`wrtcbot.json` stub ("not built yet") replaced with `wrtcbot.jsonl` — the
+WRTC weekly run-announcement email now actually drafts (local launchd, Thu
+8am; `~/.claude/skills/wrtc-coffee-email/scripts/weekly_draft.js` self-reports
+via `report.py`). Added new row `k-far-order-sync.jsonl` for the separate
+Friday 5pm K'far beverage-order draft, which runs as a claude.ai cloud
+routine (`trig_019pCRFsZRE7RLCvfmgYroWN`, sources this repo, self-reports at
+the end of its own prompt). Both only ever *draft* — color reflects whether
+the draft was built, not whether a human has sent it yet.
+
+---
+
 ### 2026-09-11 — schedule goes on the header; the page computes `next` live
 
 A `next` string computed at report time goes stale (e.g. still says
