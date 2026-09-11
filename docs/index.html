@@ -29,6 +29,7 @@
   li .src { width: 13px; height: 13px; flex: none; object-fit: contain;
             opacity: .85; border-radius: 3px; }
   li .src.muse { width: 16px; height: 16px; }
+  li .src.raspi { width: 15px; height: 15px; }
   li .n { overflow: hidden; text-overflow: ellipsis; }
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
           white-space: normal; overflow-wrap: anywhere; min-width: 0;
@@ -220,7 +221,7 @@ function render(items) {
       const logoSrc = SOURCE_LOGO[it.source] || "";
       const logoAlt = SOURCE_LABEL[it.source] || it.source;
       li.innerHTML = `<span class="h">${strip}</span>` +
-        (logoSrc ? `<img class="src${it.source === "muse" ? " muse" : ""}" src="${logoSrc}" alt="${logoAlt}" title="${logoAlt}">` : "") +
+        (logoSrc ? `<img class="src${it.source !== "claude" ? " " + it.source : ""}" src="${logoSrc}" alt="${logoAlt}" title="${logoAlt}">` : "") +
         `<span class="n"></span><span class="d"></span>`;
       li.querySelector(".n").textContent = it.label;
       const dEl = li.querySelector(".d");
