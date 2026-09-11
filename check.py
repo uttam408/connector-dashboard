@@ -298,6 +298,15 @@ check_agent("import-downloads-to-photos", "com.uttam.import-downloads-to-photos"
 record("connector-dashboard", "agents", "green", "checked", order=40,
        schedule="DAILY 05:00")
 
+# WRTCbot self-reports its own green/red via report.py on its two real run
+# days (Wed 8am email draft, Fri 5pm coffee-sync draft) -- this 5am pass
+# only marks the other five days gray so the 5-day strip reads as
+# "intentionally off" rather than silently stale. Never overwrite Wed/Fri:
+# the self-report is the more accurate signal for those.
+if time.localtime(NOW).tm_wday not in (2, 4):  # not Wed(2), not Fri(4)
+    record("WRTCbot", "agents", "gray", "not scheduled today",
+           order=50, stale_hours=170)
+
 
 # ------------------------------------------------------------ trim ----
 for path in glob.glob(os.path.join(DIR, "*.jsonl")):

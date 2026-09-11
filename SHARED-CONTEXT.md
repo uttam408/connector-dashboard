@@ -10,6 +10,21 @@ in (`docs/STATUS-FORMAT.md`, `README.md`) and link it.
 
 ---
 
+### 2026-09-11 — WRTCbot: moved to Wed noon; check.py marks its off-days gray
+
+Member-email draft moved Thu 8am -> Wed **noon** (local launchd plist).
+Coffee-sync draft stays Fri 5pm (cloud routine). Neither self-reporter
+touches Mon/Tue/Thu/Sat/Sun, so `check.py`'s 5am pass now appends a gray
+"not scheduled today" line on those five days only — never on Wed/Fri,
+where the real self-report (more accurate than a generic heuristic) wins.
+Also: the `wrtcbot.json` static stub was STILL live in the repo until just
+now — `report.py --push` only `git add`s the one `.jsonl` it just wrote, so
+an earlier `rm wrtcbot.json` on disk never got committed. If you remove a
+status file by hand outside `report.py`/`check.py`'s own git calls, commit
+that deletion yourself — don't assume it's pushed.
+
+---
+
 ### 2026-09-11 — WRTCbot collapsed back to one row for both halves
 
 (Supersedes the entry directly below.) K'far order sync is NOT a separate
