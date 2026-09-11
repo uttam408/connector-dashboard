@@ -1,0 +1,2 @@
+{"label": "raspi", "section": "services", "order": 500, "source": "claude", "schedule": "DAILY 05:00", "stale_hours": 30.0}
+{"ts": "2026-09-11T07:39:39-0400", "color": "green", "update": "up 1 day, 10 hours, 27 minutes"}
