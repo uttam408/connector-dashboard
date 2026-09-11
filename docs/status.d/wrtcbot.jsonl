@@ -1,2 +1,3 @@
-{"label": "WRTCbot", "section": "agents", "order": 50, "schedule": "THU 08:00", "stale_hours": 192.0}
-{"ts": "2026-09-10T08:18:08-04:00", "color": "green", "update": "drafted, sent manually"}
+{"label": "WRTCbot", "section": "agents", "order": 50, "stale_hours": 170}
+{"ts": "2026-09-04T18:08:12-04:00", "color": "green", "update": "coffee sync drafted, sent manually", "next": "Thu 8 AM (email)"}
+{"ts": "2026-09-10T08:18:08-04:00", "color": "green", "update": "email drafted, sent manually", "next": "Fri 5 PM (coffee)"}
