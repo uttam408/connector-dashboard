@@ -51,7 +51,7 @@ def main():
                          "stored on the header; the page computes the "
                          "concrete next instance live and keeps it current")
     ap.add_argument("--order", type=int, default=500)
-    ap.add_argument("--source", default="claude", choices=["claude", "muse"],
+    ap.add_argument("--source", default="claude", choices=["claude", "muse", "raspi"],
                     help="which system reports this row; shown as a small "
                          "logo on the dashboard")
     ap.add_argument("--stale-hours", type=float, default=None)
