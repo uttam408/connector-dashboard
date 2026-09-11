@@ -33,6 +33,16 @@ the draft was built, not whether a human has sent it yet.
 
 ---
 
+### 2026-09-11 — leftover test dupes in two rows from the schedule-header work
+
+`import-downloads-to-photos.jsonl` and `morning-checkin.jsonl` each had 5-6
+duplicate synthetic run lines (literal `next` values like "6 AM" / "tomorrow
+6 AM") left over from testing the fix below — never real runs, since current
+`check.py` doesn't emit `next` for either. Trimmed `import-downloads-to-photos`
+back to real backfill + one real check_agent line. `morning-checkin` still has
+its dupes — owner should trim it back to its last real backfill line the same
+way.
+
 ### 2026-09-11 — schedule goes on the header; the page computes `next` live
 
 A `next` string computed at report time goes stale (e.g. still says
