@@ -45,7 +45,8 @@
 const REPO = "uttam408/connector-dashboard";
 const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", gray: "\u{1F4A4}", none: "⬜" };
 const WORD = { green: "ok", red: "failed", gray: "skipped" };
-const SECTIONS = ["services", "agents"];
+const SECTIONS = ["agents", "services"];   // display order
+const SECTION_LABEL = { agents: "Agents & Pages", services: "Services" };
 const LOOKBACK = 5;
 const LIST_TTL = 10 * 60 * 1000;
 
@@ -191,7 +192,7 @@ function render(items) {
     if (!rows.length) continue;
 
     const h2 = document.createElement("h2");
-    h2.textContent = section;
+    h2.textContent = SECTION_LABEL[section] || section;
     const ul = document.createElement("ul");
     for (const it of rows) {
       if (!it.intentional) { if (it.color === "green") green++;
