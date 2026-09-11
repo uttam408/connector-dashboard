@@ -50,8 +50,9 @@ Where `check.py` still judges freshness itself:
   meaningless because the library silently refreshes an expired token)
 - **Whoop internal API** — stays on the age rule; that endpoint has no refresh
   flow, so staleness genuinely means "go re-login"
-- **launchd agents** — loaded + last exit code; `import-downloads-to-photos`
-  (Mon & Thu) is gray on off-days
+- **launchd agents** — loaded + last exit code; `downloads-to-photos`
+  (Mon & Thu) is gray on off-days, with the last run's import count as its
+  update text
 
 ## 5-day strip
 

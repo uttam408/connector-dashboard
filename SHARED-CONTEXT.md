@@ -48,6 +48,15 @@ the draft was built, not whether a human has sent it yet.
 
 ---
 
+### 2026-09-11 — downloads-to-photos row: renamed + shows real last-run counts
+
+`import-downloads-to-photos.jsonl` renamed to `downloads-to-photos.jsonl`
+(label + slug only — the underlying launchd label/log path are unchanged).
+`check.py`'s `check_agent` now parses the log's last "Done. Imported: N,
+Failed: M." line for the update text on off-days too, instead of always
+writing "not scheduled today" — the row shows what actually happened last
+time (e.g. "5 imported").
+
 ### 2026-09-11 — leftover test dupes in two rows from the schedule-header work
 
 `import-downloads-to-photos.jsonl` and `morning-checkin.jsonl` each had 5-6

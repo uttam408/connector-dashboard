@@ -257,6 +257,29 @@ else:
 # ================================================================== AGENTS ==
 EXIT_HINTS = {("com.uttam408.strava-kudos", 3): "Strava session expired — re-login"}
 
+DONE_RE = re.compile(r"Done\. Imported: (\d+), Failed: (\d+)\.")
+
+
+def last_run_summary(log):
+    """Pull the last 'Done. Imported: N, Failed: M.' line out of an
+    import-downloads-style log, so the row's update text reflects what
+    actually happened last time instead of a scheduling comment."""
+    try:
+        with open(os.path.expanduser(log), encoding="utf-8") as f:
+            lines = f.readlines()
+    except OSError:
+        return None
+    for line in reversed(lines):
+        m = DONE_RE.search(line)
+        if m:
+            imported, failed = int(m.group(1)), int(m.group(2))
+            if failed:
+                return f"{imported} imported, {failed} failed"
+            if imported:
+                return f"{imported} imported"
+            return "nothing to import"
+    return None
+
 
 def check_agent(label, plist_label, log, order, schedule, run_weekdays=None):
     """schedule: recurrence spec ("DAILY 06:00", "MON,THU 23:00") -- stored on
@@ -278,8 +301,11 @@ def check_agent(label, plist_label, log, order, schedule, run_weekdays=None):
         record(label, "agents", "red", hint, ts=log_ts, **kw)
     elif run_weekdays is not None:
         scheduled = time.localtime(NOW).tm_wday in run_weekdays
+        summary = last_run_summary(log)
+        update = summary if summary is not None else (
+            "" if scheduled else "not scheduled today")
         record(label, "agents", "green" if scheduled else "gray",
-               "" if scheduled else "not scheduled today", ts=log_ts, **kw)
+               update, ts=log_ts, **kw)
     else:
         h = age_hours(log)
         if h is not None and h < CUTOFF_H:
@@ -292,7 +318,7 @@ def check_agent(label, plist_label, log, order, schedule, run_weekdays=None):
 check_agent("morning-checkin", "com.uttam.morning-checkin",
             "~/checkin/checkin.log", order=10,
             schedule="DAILY 06:00,07:00,08:00,09:00")
-check_agent("import-downloads-to-photos", "com.uttam.import-downloads-to-photos",
+check_agent("downloads-to-photos", "com.uttam.import-downloads-to-photos",
             "~/Library/Logs/import-downloads-to-photos.log", order=30,
             schedule="MON,THU 23:00", run_weekdays={0, 3})
 record("connector-dashboard", "agents", "green", "checked", order=40,
