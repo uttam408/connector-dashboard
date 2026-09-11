@@ -2,7 +2,7 @@
   "label": "strava-friends-feed",
   "section": "agents",
   "color": "red",
-  "update": "disabled — replaced by strava-kudos-muse",
+  "update": "disabled — replaced by strava-update-muse",
   "order": 910,
   "intentional": true
 }
