@@ -51,6 +51,9 @@ def main():
                          "stored on the header; the page computes the "
                          "concrete next instance live and keeps it current")
     ap.add_argument("--order", type=int, default=500)
+    ap.add_argument("--source", default="claude", choices=["claude", "muse"],
+                    help="which system reports this row; shown as a small "
+                         "logo on the dashboard")
     ap.add_argument("--stale-hours", type=float, default=None)
     ap.add_argument("--push", action="store_true")
     args = ap.parse_args()
@@ -64,7 +67,8 @@ def main():
     os.makedirs(DIR, exist_ok=True)
     path = os.path.join(DIR, slug(args.label) + ".jsonl")
 
-    header = {"label": args.label, "section": args.section, "order": args.order}
+    header = {"label": args.label, "section": args.section, "order": args.order,
+              "source": args.source}
     if args.schedule:
         header["schedule"] = args.schedule
     if args.stale_hours is not None:

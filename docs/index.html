@@ -26,6 +26,8 @@
   li .h { letter-spacing: 1px; flex: none; }
   li .h i { font-style: normal; }
   li .h i.gap { opacity: .25; }
+  li .src { width: 13px; height: 13px; flex: none; object-fit: contain;
+            opacity: .85; border-radius: 3px; }
   li .n { overflow: hidden; text-overflow: ellipsis; }
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
           white-space: normal; overflow-wrap: anywhere; min-width: 0;
@@ -45,6 +47,8 @@
 <script>
 const REPO = "uttam408/connector-dashboard";
 const SQ = { green: "\u{1F7E9}", red: "\u{1F7E5}", gray: "\u{1F4A4}", none: "⬜" };
+const SOURCE_LOGO = { claude: "assets/claude-logo.webp", muse: "assets/muse-logo.webp" };
+const SOURCE_LABEL = { claude: "Claude", muse: "Muse" };
 const WORD = { green: "ok", red: "failed", gray: "skipped" };
 const SECTIONS = ["agents", "services"];   // display order
 const SECTION_LABEL = { agents: "Agents & Pages", services: "Services" };
@@ -169,9 +173,13 @@ function resolve(row) {
     return p.join(" | ");
   };
 
+  // which system reports this row: explicit "source" on the header wins;
+  // otherwise infer from the label (Muse's own rows are named "*-muse")
+  const source = h.source || (/-muse$/i.test(h.label || "") ? "muse" : "claude");
+
   return {
     label: h.label, section, order: h.order ?? 500,
-    intentional: !!h.intentional, color, strip, ts: last.ts, note,
+    intentional: !!h.intentional, color, strip, ts: last.ts, note, source,
   };
 }
 
@@ -207,7 +215,10 @@ function render(items) {
       }).join("");
       const li = document.createElement("li");
       if (it.intentional) li.className = "off";
+      const logoSrc = SOURCE_LOGO[it.source] || "";
+      const logoAlt = SOURCE_LABEL[it.source] || it.source;
       li.innerHTML = `<span class="h">${strip}</span>` +
+        (logoSrc ? `<img class="src" src="${logoSrc}" alt="${logoAlt}" title="${logoAlt}">` : "") +
         `<span class="n"></span><span class="d"></span>`;
       li.querySelector(".n").textContent = it.label;
       const dEl = li.querySelector(".d");

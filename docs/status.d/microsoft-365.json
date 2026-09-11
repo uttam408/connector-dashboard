@@ -4,5 +4,6 @@
   "color": "red",
   "update": "never connected",
   "order": 900,
-  "intentional": true
+  "intentional": true,
+  "source": "claude"
 }

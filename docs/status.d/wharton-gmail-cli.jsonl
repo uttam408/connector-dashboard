@@ -1,4 +1,4 @@
-{"label": "Wharton Gmail (CLI)", "section": "services", "order": 31}
+{"label": "Wharton Gmail (CLI)", "section": "services", "order": 31, "source": "claude"}
 {"ts": "2026-09-03T12:00:00-04:00", "color": "red", "update": "backfill"}
 {"ts": "2026-09-04T12:00:00-04:00", "color": "red", "update": "backfill"}
 {"ts": "2026-09-05T12:00:00-04:00", "color": "red", "update": "backfill"}
@@ -13,3 +13,5 @@
 {"ts": "2026-09-10T14:17:20-0400", "color": "red", "update": "token stale \u2014 28h ago"}
 {"ts": "2026-09-11T00:25:44-0400", "color": "red", "update": "token stale \u2014 38h ago"}
 {"ts": "2026-09-11T00:26:11-0400", "color": "red", "update": "token stale \u2014 38h ago"}
+{"ts": "2026-09-11T01:12:02-0400", "color": "red", "update": "token stale \u2014 39h ago"}
+{"ts": "2026-09-11T01:19:50-0400", "color": "red", "update": "token stale \u2014 39h ago"}

@@ -10,6 +10,14 @@ in (`docs/STATUS-FORMAT.md`, `README.md`) and link it.
 
 ---
 
+### 2026-09-11 — rows show a small logo for who reports them
+
+Set `"source":"claude"` or `"source":"muse"` on your row's header (or pass
+`report.py --source muse`). Renders as a small logo between the strip and
+label. Omitting it falls back to a `*-muse` label-suffix guess — set it
+explicitly instead. Assets: `docs/assets/{claude,muse}-logo.webp`. Details in
+`docs/STATUS-FORMAT.md`.
+
 ### 2026-09-11 — WRTCbot: moved to Wed noon; check.py marks its off-days gray
 
 Member-email draft moved Thu 8am -> Wed **noon** (local launchd plist).

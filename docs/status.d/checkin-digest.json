@@ -4,5 +4,6 @@
   "color": "red",
   "update": "paused",
   "order": 20,
-  "intentional": true
+  "intentional": true,
+  "source": "claude"
 }

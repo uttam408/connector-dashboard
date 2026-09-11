@@ -1,4 +1,4 @@
-{"label": "downloads-to-photos", "section": "agents", "order": 30, "schedule": "MON,THU 23:00"}
+{"label": "downloads-to-photos", "section": "agents", "order": 30, "source": "claude", "schedule": "MON,THU 23:00"}
 {"ts": "2026-09-03T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-04T12:00:00-04:00", "color": "gray", "update": "backfill"}
 {"ts": "2026-09-05T12:00:00-04:00", "color": "gray", "update": "backfill"}
@@ -7,4 +7,6 @@
 {"ts": "2026-09-08T12:00:00-04:00", "color": "gray", "update": "backfill"}
 {"ts": "2026-09-09T12:00:00-04:00", "color": "gray", "update": "backfill"}
 {"ts": "2026-09-10T12:00:00-04:00", "color": "green", "update": "backfill"}
+{"ts": "2026-09-10T23:00:08-0400", "color": "gray", "update": "5 imported"}
+{"ts": "2026-09-10T23:00:08-0400", "color": "gray", "update": "5 imported"}
 {"ts": "2026-09-10T23:00:08-0400", "color": "gray", "update": "5 imported"}

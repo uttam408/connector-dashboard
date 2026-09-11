@@ -53,7 +53,7 @@ def record(label, section, color, update="", next_=None, order=500,
     computes the concrete next-run live from it, so it never goes stale.
     next_ is a literal one-off override; prefer schedule."""
     path = os.path.join(DIR, slug(label) + ".jsonl")
-    header = {"label": label, "section": section, "order": order}
+    header = {"label": label, "section": section, "order": order, "source": "claude"}
     if schedule:
         header["schedule"] = schedule
     if stale_hours is not None:
@@ -138,7 +138,7 @@ try:
         if label:
             label = label[0].upper() + label[1:]
         if label.lower() in ("gmail", "google calendar", "google drive"):
-            label += " (MCP)"
+            label = f"Wharton {label} (MCP)"
         s = status_part.lower()
         if any(k in label.lower() for k in DIM):
             continue                      # dim rows are static .json, not logged
