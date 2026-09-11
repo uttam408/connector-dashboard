@@ -22,12 +22,13 @@
     text-transform: uppercase; letter-spacing: .08em;
   }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; gap: 10px; flex-wrap: wrap; white-space: nowrap; }
+  li { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; white-space: nowrap; }
   li .h { letter-spacing: 1px; flex: none; }
   li .h i { font-style: normal; }
   li .h i.gap { opacity: .25; }
   li .src { width: 13px; height: 13px; flex: none; object-fit: contain;
             opacity: .85; border-radius: 3px; }
+  li .src.muse { width: 16px; height: 16px; }
   li .n { overflow: hidden; text-overflow: ellipsis; }
   li .d { color: var(--dim); margin-left: auto; padding-left: 16px;
           white-space: normal; overflow-wrap: anywhere; min-width: 0;
@@ -218,7 +219,7 @@ function render(items) {
       const logoSrc = SOURCE_LOGO[it.source] || "";
       const logoAlt = SOURCE_LABEL[it.source] || it.source;
       li.innerHTML = `<span class="h">${strip}</span>` +
-        (logoSrc ? `<img class="src" src="${logoSrc}" alt="${logoAlt}" title="${logoAlt}">` : "") +
+        (logoSrc ? `<img class="src${it.source === "muse" ? " muse" : ""}" src="${logoSrc}" alt="${logoAlt}" title="${logoAlt}">` : "") +
         `<span class="n"></span><span class="d"></span>`;
       li.querySelector(".n").textContent = it.label;
       const dEl = li.querySelector(".d");
