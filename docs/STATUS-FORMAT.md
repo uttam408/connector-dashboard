@@ -32,7 +32,7 @@ Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
 | `label` | yes | display name |
 | `section` | yes | `"services"` or `"agents"` |
 | `order` | no | sort key within the section; default `500` |
-| `source` | no | which system reports this row — `"claude"` or `"muse"`. Shown as a small logo between the strip and the label. If omitted, the page infers it from the label (`*-muse` → Muse, else Claude) — but set it explicitly; don't rely on the naming heuristic. |
+| `source` | no | which system reports this row — `"claude"`, `"muse"`, or `"raspi"`. Shown as a small logo between the strip and the label. If omitted, the page infers it from the label (`*-muse` → Muse, else Claude) — but set it explicitly; don't rely on the naming heuristic, especially for `raspi` (no label-suffix fallback exists for it). |
 | `schedule` | no | recurrence — `"DAILY 06:00"` or `"MON,THU 23:00"` (days = `DAILY` or comma list of `MON..SUN`; times = comma list of 24h `HH:MM`). **The page computes the concrete next run from this live**, every render and every 30s tick — `"tonight 11 PM"`, `"tomorrow 6 AM"` — so it can never go stale the way a string frozen at report time would (e.g. still reading "tomorrow" after midnight has passed). Use this over a literal `next` whenever the row runs on a real recurrence. |
 | `stale_hours` | no | if the newest run's `ts` is older than this, the page shows the row red regardless of its colour — catches an agent that silently stopped |
 
