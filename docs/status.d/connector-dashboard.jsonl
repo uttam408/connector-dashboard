@@ -1,4 +1,4 @@
-{"label": "connector-dashboard", "section": "agents", "order": 40}
+{"label": "connector-dashboard", "section": "agents", "order": 40, "schedule": "DAILY 05:00"}
 {"ts": "2026-09-03T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-04T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-05T12:00:00-04:00", "color": "green", "update": "backfill"}
@@ -11,3 +11,4 @@
 {"ts": "2026-09-10T12:11:48-0400", "color": "green", "update": "checked", "next": "5 AM"}
 {"ts": "2026-09-10T14:14:46-0400", "color": "green", "update": "checked", "next": "5 AM"}
 {"ts": "2026-09-10T14:17:20-0400", "color": "green", "update": "checked", "next": "tomorrow 5 AM"}
+{"ts": "2026-09-11T00:25:44-0400", "color": "green", "update": "checked"}

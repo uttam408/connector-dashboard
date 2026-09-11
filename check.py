@@ -24,8 +24,6 @@ import re
 import subprocess
 import time
 
-from schedule import next_run
-
 REPO = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(REPO, "docs", "status.d")
 HOME = os.path.expanduser("~")
@@ -48,11 +46,16 @@ def iso(epoch):
 
 
 def record(label, section, color, update="", next_=None, order=500,
-           stale_hours=None, ts=None):
+           stale_hours=None, ts=None, schedule=None):
     """Ensure a header line, then append one run line. ts defaults to now;
-    pass a log's mtime for an agent so 'x ago' means 'when it last ran'."""
+    pass a log's mtime for an agent so 'x ago' means 'when it last ran'.
+    schedule ("DAILY 06:00", "MON,THU 23:00") goes on the header -- the page
+    computes the concrete next-run live from it, so it never goes stale.
+    next_ is a literal one-off override; prefer schedule."""
     path = os.path.join(DIR, slug(label) + ".jsonl")
     header = {"label": label, "section": section, "order": order}
+    if schedule:
+        header["schedule"] = schedule
     if stale_hours is not None:
         header["stale_hours"] = stale_hours
 
@@ -255,37 +258,35 @@ else:
 EXIT_HINTS = {("com.uttam408.strava-kudos", 3): "Strava session expired — re-login"}
 
 
-def check_agent(label, plist_label, log, order, schedule,
-                run_weekdays=None):
-    """schedule: recurrence spec ("DAILY 06:00", "MON,THU 23:00"). The concrete
-    next instance is computed now. run_weekdays: if set, the row shows gray on
-    days not in the set instead of red for staleness."""
+def check_agent(label, plist_label, log, order, schedule, run_weekdays=None):
+    """schedule: recurrence spec ("DAILY 06:00", "MON,THU 23:00") -- stored on
+    the header; the page computes the concrete next-run live, so it can't go
+    stale (unlike a string computed once here and frozen). run_weekdays: if
+    set, the row shows gray on days not in the set instead of red."""
     loaded, last_exit = agent_state(plist_label)
     try:
         log_ts = iso(os.path.getmtime(os.path.expanduser(log)))
     except OSError:
         log_ts = None
-    next_ = next_run(schedule)
+    kw = dict(order=order, schedule=schedule)
 
     if not loaded:
-        record(label, "agents", "red", "not loaded", order=order, next_=next_)
+        record(label, "agents", "red", "not loaded", **kw)
     elif last_exit not in (None, 0):
         hint = EXIT_HINTS.get((plist_label, last_exit),
                               f"last run failed (exit {last_exit})")
-        record(label, "agents", "red", hint, order=order, next_=next_, ts=log_ts)
+        record(label, "agents", "red", hint, ts=log_ts, **kw)
     elif run_weekdays is not None:
         scheduled = time.localtime(NOW).tm_wday in run_weekdays
         record(label, "agents", "green" if scheduled else "gray",
-               "" if scheduled else "not scheduled today",
-               order=order, next_=next_, ts=log_ts)
+               "" if scheduled else "not scheduled today", ts=log_ts, **kw)
     else:
         h = age_hours(log)
         if h is not None and h < CUTOFF_H:
-            record(label, "agents", "green", "", order=order, next_=next_,
-                   ts=log_ts)
+            record(label, "agents", "green", "", ts=log_ts, **kw)
         else:
             record(label, "agents", "red",
-                   f"no run in {CUTOFF_H}h ({rel(h)})", order=order, next_=next_)
+                   f"no run in {CUTOFF_H}h ({rel(h)})", **kw)
 
 
 check_agent("morning-checkin", "com.uttam.morning-checkin",
@@ -295,7 +296,7 @@ check_agent("import-downloads-to-photos", "com.uttam.import-downloads-to-photos"
             "~/Library/Logs/import-downloads-to-photos.log", order=30,
             schedule="MON,THU 23:00", run_weekdays={0, 3})
 record("connector-dashboard", "agents", "green", "checked", order=40,
-       next_=next_run("DAILY 05:00"))
+       schedule="DAILY 05:00")
 
 
 # ------------------------------------------------------------ trim ----

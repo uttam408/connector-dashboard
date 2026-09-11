@@ -20,8 +20,8 @@ docs/status.d/<slug>.json    a static row — for things that never "run"
 Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
 
 ```
-{"label":"strava-kudos-muse","section":"agents","order":45,"stale_hours":30}
-{"ts":"2026-09-10T04:00:12-04:00","color":"green","update":"gave 2 kudos","next":"Sat 6:35 PM"}
+{"label":"strava-kudos-muse","section":"agents","order":45,"schedule":"MON,THU 20:00","stale_hours":30}
+{"ts":"2026-09-10T04:00:12-04:00","color":"green","update":"gave 2 kudos"}
 {"ts":"2026-09-10T14:20:03-04:00","color":"red","update":"session expired — re-login"}
 ```
 
@@ -32,6 +32,7 @@ Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
 | `label` | yes | display name |
 | `section` | yes | `"services"` or `"agents"` |
 | `order` | no | sort key within the section; default `500` |
+| `schedule` | no | recurrence — `"DAILY 06:00"` or `"MON,THU 23:00"` (days = `DAILY` or comma list of `MON..SUN`; times = comma list of 24h `HH:MM`). **The page computes the concrete next run from this live**, every render and every 30s tick — `"tonight 11 PM"`, `"tomorrow 6 AM"` — so it can never go stale the way a string frozen at report time would (e.g. still reading "tomorrow" after midnight has passed). Use this over a literal `next` whenever the row runs on a real recurrence. |
 | `stale_hours` | no | if the newest run's `ts` is older than this, the page shows the row red regardless of its colour — catches an agent that silently stopped |
 
 **Run line** (identified by having `ts`):
@@ -41,7 +42,7 @@ Newline-delimited JSON. **Line 1 is a header. Every line after it is a run.**
 | `ts` | yes | ISO-8601 **with offset**, e.g. `2026-09-10T04:00:12-04:00` |
 | `color` | yes | `green` ok · `red` failed · `gray` skipped (a less-than-daily job on an off day) |
 | `update` | no | what happened this run — short: `"digest sent"`, `"gave 2 kudos"` |
-| `next` | no | the **concrete next run**, not the recurrence: `"tonight 11 PM"`, `"tomorrow 6 AM"`, `"Sat 6:35 PM"`. Recompute it each time you report so it stays fresh. |
+| `next` | no | a **literal** next-run string, for a one-off or irregular row with no real `schedule`. Frozen at write time — prefer `schedule` on the header when the recurrence is regular. |
 
 The page shows the note as the newest run's present fields joined by ` | `:
 `gave 2 kudos | 3h ago | next Sat 6:35 PM` (agents show the `ts` as "x ago";
@@ -52,12 +53,15 @@ days.
 ### Writing to it — just append
 
 ```
-echo '{"ts":"'"$(date -Iseconds)"'","color":"green","update":"gave 2 kudos","next":"tomorrow 04:00"}' \
+echo '{"ts":"'"$(date -Iseconds)"'","color":"green","update":"gave 2 kudos"}' \
   >> docs/status.d/strava-kudos-muse.jsonl
 git add docs/status.d/strava-kudos-muse.jsonl
 git commit -m "status: strava-kudos-muse — gave 2 kudos"
 git pull --rebase && git push
 ```
+
+(`schedule` on the header only needs setting/updating when the recurrence
+itself changes — not on every run.)
 
 No read, no trim, no SHA. `.gitattributes` sets `*.jsonl merge=union`, so two
 agents appending at the same time auto-merge. **Trimming is central** —
@@ -70,11 +74,9 @@ If you have no working tree (pure GitHub API): GET the file for its blob SHA
 Machines with the repo can use `report.py`:
 `python3 report.py --label X --section agents --color green --update "…" --schedule "MON,THU 23:00" --push`
 
-`--schedule "<DAYS> <TIMES>"` (DAYS = `DAILY` or `MON,THU,…`; TIMES = comma
-`HH:MM`) makes `report.py` compute the concrete `next` for you at report time
-— e.g. `"DAILY 06:00"` → `"tomorrow 6 AM"`. Pass `--next "…"` to set it
-literally instead. `schedule.py` in the repo root exposes `next_run(spec)`
-directly.
+`schedule.py` in the repo root exposes `next_run(spec)` — the Python twin of
+the JS `nextRun()` in `docs/index.html`. Both must agree on the grammar; if
+you change one, change the other.
 
 ## Static row (`.json`)
 

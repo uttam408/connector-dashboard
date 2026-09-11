@@ -1,4 +1,4 @@
-{"label": "morning-checkin", "section": "agents", "order": 10}
+{"label": "morning-checkin", "section": "agents", "order": 10, "schedule": "DAILY 06:00,07:00,08:00,09:00"}
 {"ts": "2026-09-03T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-04T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-05T12:00:00-04:00", "color": "red", "update": "backfill"}
@@ -10,3 +10,4 @@
 {"ts": "2026-09-10T09:00:05-0400", "color": "green", "next": "6 AM"}
 {"ts": "2026-09-10T09:00:05-0400", "color": "green", "next": "6 AM"}
 {"ts": "2026-09-10T09:00:05-0400", "color": "green", "next": "tomorrow 6 AM"}
+{"ts": "2026-09-10T09:00:05-0400", "color": "green"}

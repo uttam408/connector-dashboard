@@ -25,8 +25,6 @@ import subprocess
 import sys
 import time
 
-from schedule import next_run
-
 REPO = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(REPO, "docs", "status.d")
 
@@ -46,10 +44,12 @@ def main():
     ap.add_argument("--update", default="")
     ap.add_argument("--ts", default=None, help="ISO-8601 w/ offset; default now")
     ap.add_argument("--next", dest="next_", default="",
-                    help="literal next-run string; overrides --schedule")
+                    help="literal next-run string, for a one-off/irregular "
+                         "row (this goes stale -- prefer --schedule)")
     ap.add_argument("--schedule", default="",
-                    help='recurrence, e.g. "DAILY 06:00" or "MON,THU 23:00"; '
-                         "the concrete next instance is computed now")
+                    help='recurrence, e.g. "DAILY 06:00" or "MON,THU 23:00", '
+                         "stored on the header; the page computes the "
+                         "concrete next instance live and keeps it current")
     ap.add_argument("--order", type=int, default=500)
     ap.add_argument("--stale-hours", type=float, default=None)
     ap.add_argument("--push", action="store_true")
@@ -65,15 +65,16 @@ def main():
     path = os.path.join(DIR, slug(args.label) + ".jsonl")
 
     header = {"label": args.label, "section": args.section, "order": args.order}
+    if args.schedule:
+        header["schedule"] = args.schedule
     if args.stale_hours is not None:
         header["stale_hours"] = args.stale_hours
     run = {"ts": args.ts or time.strftime("%Y-%m-%dT%H:%M:%S%z"),
            "color": args.color}
     if args.update:
         run["update"] = args.update
-    nxt = args.next_ or (next_run(args.schedule) if args.schedule else "")
-    if nxt:
-        run["next"] = nxt
+    if args.next_:
+        run["next"] = args.next_
 
     lines = []
     if os.path.exists(path):

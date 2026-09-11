@@ -56,6 +56,45 @@ function ago(iso) {
   if (s < 172800) return Math.round(s / 3600) + "h ago";
   return Math.round(s / 86400) + "d ago";
 }
+// nextRun mirrors schedule.py's next_run(): "<DAYS> <TIMES>" -> a concrete
+// instance ("tonight 11 PM", "tomorrow 6 AM"), recomputed live on every
+// render/tick so it never goes stale like a string frozen at report time.
+const WD = { MON: 0, TUE: 1, WED: 2, THU: 3, FRI: 4, SAT: 5, SUN: 6 };
+function ampm(h, m) {
+  const label = `${h % 12 || 12}` + (m ? ":" + String(m).padStart(2, "0") : "");
+  return `${label} ${h < 12 ? "AM" : "PM"}`;
+}
+function nextRun(spec, now) {
+  now = now || new Date();
+  try {
+    const [daysPart, timesPart] = spec.trim().split(/\s+/);
+    const weekdays = daysPart.toUpperCase() === "DAILY"
+      ? new Set([0, 1, 2, 3, 4, 5, 6])
+      : new Set(daysPart.split(",").map(d => WD[d.trim().toUpperCase().slice(0, 3)]));
+    const times = timesPart.split(",").map(t => t.trim().split(":").map(Number));
+    let best = null;
+    for (let d = 0; d <= 7; d++) {
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
+      // JS getDay(): Sun=0..Sat=6; weekdays{} above uses the same Mon..Sun
+      // *names* as schedule.py but Python-style 0=Mon indices, so compare
+      // via the day-of-week name mapping, not raw getDay().
+      const jsToOurs = [6, 0, 1, 2, 3, 4, 5];   // getDay() -> MON=0..SUN=6
+      if (!weekdays.has(jsToOurs[day.getDay()])) continue;
+      for (const [hh, mm] of times) {
+        const cand = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm, 0, 0);
+        if (cand > now && (!best || cand < best)) best = cand;
+      }
+    }
+    if (!best) return null;
+    const dayDiff = Math.round(
+      (new Date(best.getFullYear(), best.getMonth(), best.getDate()) -
+       new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+    const prefix = dayDiff === 0 ? (best.getHours() >= 17 ? "tonight" : "today")
+      : dayDiff === 1 ? "tomorrow"
+      : best.toLocaleDateString("en-US", { weekday: "short" });
+    return `${prefix} ${ampm(best.getHours(), best.getMinutes())}`;
+  } catch (e) { return null; }
+}
 function dayOf(iso) {                       // local calendar day of a timestamp
   const d = new Date(iso);
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
@@ -121,7 +160,10 @@ function resolve(row) {
     if (last.update && last.update !== "backfill") p.push(last.update);
     // services carry freshness in `update` text; only agents show bare "x ago"
     if (last.ts && section === "agents") p.push(ago(last.ts));
-    if (last.next || h.next) p.push("next " + (last.next || h.next));
+    // schedule (header) is computed live so it can't go stale; next (a run's
+    // own field, or a static row's) is a literal, frozen at write time
+    const nxt = h.schedule ? nextRun(h.schedule) : (last.next || h.next);
+    if (nxt) p.push("next " + nxt);
     return p.join(" | ");
   };
 
