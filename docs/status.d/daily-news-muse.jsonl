@@ -2,3 +2,4 @@
 {"ts": "2026-09-10T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-10T07:00:00-04:00", "color": "green", "update": "digest sent", "next": "Fri 7 AM"}
 {"ts": "2026-09-11T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Sat 7 AM"}
+{"ts": "2026-09-12T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Sun 7 AM"}
