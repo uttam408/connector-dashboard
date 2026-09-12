@@ -1,4 +1,5 @@
-{"label": "WRTCbot", "section": "agents", "order": 50, "source": "claude", "stale_hours": 170.0}
+{"label": "WRTCbot", "section": "agents", "order": 50, "source": "claude", "stale_hours": 170}
 {"ts": "2026-09-04T18:08:12-04:00", "color": "green", "update": "coffee sync drafted, sent manually", "next": "Thu 8 AM (email)"}
 {"ts": "2026-09-10T08:18:08-04:00", "color": "green", "update": "email drafted, sent manually", "next": "Fri 5 PM (coffee)"}
 {"ts": "2026-09-11T21:07:19+0000", "color": "green", "update": "coffee sync: 18 drinks, awaiting send", "next": "Wed noon"}
+{"ts": "2026-09-12T05:10:23-0400", "color": "gray", "update": "not scheduled today"}
