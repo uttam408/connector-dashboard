@@ -1,2 +1,3 @@
 {"label": "strava-update-muse", "section": "agents", "order": 45, "stale_hours": 30, "source": "muse"}
 {"ts": "2026-09-10T10:00:00-04:00", "color": "green", "update": "2 friends activities", "next": "Sat 6 PM"}
+{"ts": "2026-09-12T18:00:00-04:00", "color": "green", "update": "30 friends activities", "next": "Tue 2 AM"}
