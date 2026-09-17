@@ -1,4 +1,4 @@
-{"label": "Wharton Google Calendar (MCP)", "section": "services", "order": 11, "source": "claude"}
+{"label": "Wharton Google Calendar (MCP)", "section": "services", "order": 12, "source": "claude"}
 {"ts": "2026-09-11T01:12:02-0400", "color": "green"}
 {"ts": "2026-09-11T01:19:50-0400", "color": "green"}
 {"ts": "2026-09-11T05:00:04-0400", "color": "green"}
@@ -6,3 +6,4 @@
 {"ts": "2026-09-14T05:04:27-0400", "color": "green"}
 {"ts": "2026-09-15T05:03:07-0400", "color": "green"}
 {"ts": "2026-09-16T05:12:42-0400", "color": "green"}
+{"ts": "2026-09-17T05:07:46-0400", "color": "green"}
