@@ -1,6 +1,6 @@
-{"label": "strava-update-muse", "section": "agents", "order": 45, "stale_hours": 30, "source": "muse"}
+{"label": "strava-update-muse", "section": "agents", "order": 21, "stale_hours": 30, "source": "muse", "intentional": true}
 {"ts": "2026-09-10T10:00:00-04:00", "color": "green", "update": "2 friends activities", "next": "Sat 6 PM"}
 {"ts": "2026-09-12T18:00:00-04:00", "color": "green", "update": "30 friends activities", "next": "Tue 2 AM"}
 {"ts": "2026-09-15T03:00:00-04:00", "color": "red", "update": "failed: feed wouldn't load", "next": "Thu 11 AM"}
 {"ts": "2026-09-15T10:00:00-04:00", "color": "green", "update": "14 friends activities", "next": "Thu 11 AM"}
-{"ts": "2026-09-15T11:00:00-04:00", "color": "grey", "update": "schedule paused", "next": "\u2014"}
+{"ts": "2026-09-15T11:00:00-04:00", "color": "gray", "update": "schedule paused", "next": "—"}
