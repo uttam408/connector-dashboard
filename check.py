@@ -122,7 +122,8 @@ def agent_state(plist_label):
 # ================================================================ SERVICES ==
 
 # --------------------------------------------- Claude.ai MCP connectors ----
-DIM = {"pitchbook": "not in use right now", "microsoft 365": "never connected"}
+DIM = {"pitchbook": "not in use right now", "microsoft 365": "never connected",
+       "claude docs": "not in use right now"}
 order = 10
 try:
     text = run(["claude", "mcp", "list"]).stdout
