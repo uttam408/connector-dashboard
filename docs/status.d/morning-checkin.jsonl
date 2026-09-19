@@ -60,3 +60,4 @@
 {"ts": "2026-09-18T09:00:01-0400", "color": "green"}
 {"ts": "2026-09-19T06:12:34-0400", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-09-19T08:21:43-0400", "color": "green", "update": "digest sent"}
+{"ts": "2026-09-19T09:00:00-0400", "color": "green", "update": "already sent today"}
