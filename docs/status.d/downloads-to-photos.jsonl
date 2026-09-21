@@ -17,6 +17,9 @@
 {"ts": "2026-09-14T23:26:57-0400", "color": "gray", "update": "1 imported, 2 failed"}
 {"ts": "2026-09-14T23:26:57-0400", "color": "gray", "update": "1 imported, 2 failed"}
 {"ts": "2026-09-14T23:26:57-0400", "color": "green", "update": "1 imported, 2 failed"}
+{"ts": "2026-09-18T12:00:00-04:00", "color": "gray", "update": "backfill"}
+{"ts": "2026-09-19T12:00:00-04:00", "color": "gray", "update": "backfill"}
+{"ts": "2026-09-20T12:00:00-04:00", "color": "gray", "update": "backfill"}
 {"ts": "2026-09-17T23:04:11-0400", "color": "green", "update": "3 imported, 2 failed"}
 {"ts": "2026-09-17T23:04:11-0400", "color": "gray", "update": "3 imported, 2 failed"}
 {"ts": "2026-09-17T23:04:11-0400", "color": "gray", "update": "3 imported, 2 failed"}

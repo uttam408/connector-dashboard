@@ -302,11 +302,14 @@ def check_agent(label, plist_label, log, order, schedule, run_weekdays=None):
         record(label, "agents", "red", hint, ts=log_ts, **kw)
     elif run_weekdays is not None:
         scheduled = time.localtime(NOW).tm_wday in run_weekdays
-        summary = last_run_summary(log)
-        update = summary if summary is not None else (
-            "" if scheduled else "not scheduled today")
-        record(label, "agents", "green" if scheduled else "gray",
-               update, ts=log_ts, **kw)
+        if scheduled:
+            summary = last_run_summary(log)
+            record(label, "agents", "green", summary or "", ts=log_ts, **kw)
+        else:
+            # stamp the off-day gray with *now*, not the log mtime -- otherwise
+            # it lands on the last real run's day (turning that tile 💤) and
+            # the off-day's own tile stays blank
+            record(label, "agents", "gray", "not scheduled today", **kw)
     else:
         h = age_hours(log)
         if h is not None and h < CUTOFF_H:
