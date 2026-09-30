@@ -1,22 +1,2 @@
-{"label": "daily-news-muse", "section": "agents", "order": 46, "stale_hours": 30, "source": "muse"}
-{"ts": "2026-09-10T12:00:00-04:00", "color": "green", "update": "backfill"}
-{"ts": "2026-09-10T07:00:00-04:00", "color": "green", "update": "digest sent", "next": "Fri 7 AM"}
-{"ts": "2026-09-11T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Sat 7 AM"}
-{"ts": "2026-09-12T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Sun 7 AM"}
-{"ts": "2026-09-13T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Mon 7 AM"}
-{"ts": "2026-09-14T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Tue 7 AM"}
-{"ts":"2026-09-15T06:00:00-04:00","color":"green","update":"digest sent","next":"Wed 7 AM"}
-{"ts":"2026-09-16T06:00:00-04:00","color":"green","update":"digest sent","next":"Thu 7 AM"}
-{"ts": "2026-09-17T06:00:00-04:00", "color": "green", "update": "digest sent", "next": "Fri 7 AM"}
-{"ts":"2026-09-18T07:00:00-04:00","color":"green","update":"digest sent","next":"Sat 7 AM"}
-{"ts":"2026-09-19T07:00:00-04:00","color":"green","update":"digest sent","next":"Sun 7 AM"}
-{"ts":"2026-09-20T07:00:00-04:00","color":"green","update":"digest sent","next":"Mon 7 AM"}
-{"ts":"2026-09-21T07:00:00-04:00","color":"green","update":"digest sent","next":"Tue 7 AM"}
-{"ts":"2026-09-22T07:00:00-04:00","color":"green","update":"digest sent","next":"Wed 7 AM"}
-{"ts":"2026-09-23T06:00:00-04:00","color":"green","update":"digest sent","next":"Thu 7 AM"}
-{"ts":"2026-09-24T06:00:00-04:00","color":"green","update":"digest sent","next":"Fri 7 AM"}
-{"ts":"2026-09-25T07:00:00-04:00","color":"green","update":"digest sent","next":"Sat 7 AM"}
-{"ts":"2026-09-26T06:00:00-04:00","color":"green","update":"digest sent","next":"Sun 7 AM"}
-{"ts":"2026-09-27T06:00:00-04:00","color":"green","update":"digest sent","next":"Mon 7 AM"}
-{"ts":"2026-09-28T07:00:00-04:00","color":"green","update":"digest sent","next":"Tue 7 AM"}
-{"ts":"2026-09-29T07:00:00-04:00","color":"green","update":"digest sent","next":"Wed 7 AM"}
+"digest sent","next":"Wed 7 AM"}
+{"ts":"2026-09-30T07:00:00-04:00","color":"green","update":"digest sent","next":"Thu 7 AM"}
