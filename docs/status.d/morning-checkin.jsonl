@@ -1,9 +1,4 @@
-{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00", "stale_hours": 26.0}
-{"ts": "2026-09-18T09:00:01-0400", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-09-18T09:00:01-0400", "color": "green"}
-{"ts": "2026-09-19T06:12:34-0400", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-09-19T08:21:43-0400", "color": "green", "update": "digest sent"}
-{"ts": "2026-09-19T09:00:00-0400", "color": "green", "update": "already sent today"}
+{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00"}
 {"ts": "2026-09-19T09:00:00-0400", "color": "green"}
 {"ts": "2026-09-20T06:00:05-0400", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-09-20T07:00:03-0400", "color": "green", "update": "watching for wake-up"}
@@ -63,3 +58,4 @@
 {"ts": "2026-10-01T04:12:47-0700", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-10-01T05:07:47-0700", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-10-01T06:00:14-0700", "color": "green", "update": "watching for wake-up"}
+{"ts": "2026-10-01T06:00:14-0700", "color": "green"}
