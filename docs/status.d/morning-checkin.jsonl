@@ -1,9 +1,4 @@
-{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00", "stale_hours": 26.0}
-{"ts": "2026-10-02T06:01:00-0700", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-10-02T07:00:05-0700", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-10-02T08:00:06-0700", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-10-02T09:00:03-0700", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-10-02T09:00:03-0700", "color": "green"}
+{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00"}
 {"ts": "2026-10-03T06:00:56-0700", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-10-03T07:01:40-0700", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-10-03T08:01:57-0700", "color": "green", "update": "watching for wake-up"}
@@ -63,3 +58,4 @@
 {"ts": "2026-10-14T10:00:04-0400", "color": "green", "update": "already sent today"}
 {"ts": "2026-10-14T11:00:06-0400", "color": "green", "update": "already sent today"}
 {"ts": "2026-10-14T12:00:04-0400", "color": "green", "update": "already sent today"}
+{"ts": "2026-10-14T12:00:04-0400", "color": "green"}
