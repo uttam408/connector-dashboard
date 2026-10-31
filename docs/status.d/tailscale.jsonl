@@ -1,5 +1,4 @@
 {"label": "Tailscale", "section": "services", "order": 20, "source": "claude"}
-{"ts": "2026-09-10T12:00:00-04:00", "color": "green", "update": "backfill"}
 {"ts": "2026-09-10T12:10:25-0400", "color": "green", "update": "3 peers"}
 {"ts": "2026-09-10T12:11:48-0400", "color": "green", "update": "3 peers"}
 {"ts": "2026-09-10T14:14:46-0400", "color": "green", "update": "3 peers"}
@@ -59,3 +58,4 @@
 {"ts": "2026-10-28T05:01:47-0400", "color": "green", "update": "6 peers"}
 {"ts": "2026-10-29T05:00:02-0400", "color": "green", "update": "6 peers"}
 {"ts": "2026-10-30T05:01:53-0400", "color": "green", "update": "6 peers"}
+{"ts": "2026-10-31T05:12:47-0400", "color": "green", "update": "6 peers"}
