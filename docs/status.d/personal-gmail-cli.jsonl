@@ -1,5 +1,4 @@
 {"label": "Personal Gmail (CLI)", "section": "services", "order": 30, "source": "claude"}
-{"ts": "2026-09-10T12:11:48-0400", "color": "green", "update": "token refreshed 23h ago"}
 {"ts": "2026-09-10T14:14:46-0400", "color": "red", "update": "token stale \u2014 25h ago"}
 {"ts": "2026-09-10T14:17:20-0400", "color": "red", "update": "token stale \u2014 25h ago"}
 {"ts": "2026-09-11T00:25:44-0400", "color": "red", "update": "token stale \u2014 35h ago"}
@@ -59,3 +58,4 @@
 {"ts": "2026-10-30T05:01:53-0400", "color": "green", "update": "token refreshed 21h ago"}
 {"ts": "2026-10-31T05:12:47-0400", "color": "green", "update": "token refreshed 21h ago"}
 {"ts": "2026-11-01T05:02:28-0500", "color": "green", "update": "token refreshed 22h ago"}
+{"ts": "2026-11-02T05:06:25-0500", "color": "red", "update": "token stale \u2014 46h ago"}
