@@ -61,3 +61,4 @@
 {"ts": "2026-11-02T09:00:03-0500", "color": "green"}
 {"ts": "2026-11-03T06:02:55-0500", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-11-03T07:00:46-0500", "color": "green", "update": "watching for wake-up"}
+{"ts": "2026-11-03T08:00:19-0500", "color": "red", "update": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"}
