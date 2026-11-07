@@ -1,6 +1,5 @@
 {"label": "downloads-to-photos", "section": "agents", "order": 30, "source": "claude", "schedule": "MON,THU 23:00"}
 {"ts": "2026-09-10T23:00:08-0400", "color": "gray", "update": "5 imported"}
-{"ts": "2026-09-10T23:00:08-0400", "color": "gray", "update": "5 imported"}
 {"ts": "2026-09-10T23:00:08-0400", "color": "green", "update": "5 imported"}
 {"ts": "2026-09-14T23:26:57-0400", "color": "gray", "update": "1 imported, 2 failed"}
 {"ts": "2026-09-14T23:26:57-0400", "color": "gray", "update": "1 imported, 2 failed"}
@@ -59,3 +58,4 @@
 {"ts": "2026-11-04T05:05:16-0500", "color": "gray", "update": "not scheduled today"}
 {"ts": "2026-11-02T23:00:07-0500", "color": "green", "update": "5 imported"}
 {"ts": "2026-11-06T05:02:49-0500", "color": "gray", "update": "not scheduled today"}
+{"ts": "2026-11-07T05:00:49-0500", "color": "gray", "update": "not scheduled today"}

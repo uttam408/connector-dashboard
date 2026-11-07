@@ -1,5 +1,4 @@
 {"label": "Secondary Gmail (CLI)", "section": "services", "order": 32, "source": "claude"}
-{"ts": "2026-09-11T01:12:02-0400", "color": "red", "update": "token stale \u2014 36h ago"}
 {"ts": "2026-09-11T01:19:50-0400", "color": "red", "update": "token stale \u2014 36h ago"}
 {"ts": "2026-09-11T05:00:04-0400", "color": "red", "update": "token stale \u2014 40h ago"}
 {"ts": "2026-09-12T05:10:23-0400", "color": "red", "update": "token stale \u2014 3d ago"}
@@ -59,3 +58,4 @@
 {"ts": "2026-11-04T05:05:16-0500", "color": "red", "update": "token stale \u2014 56d ago"}
 {"ts": "2026-11-05T05:14:10-0500", "color": "red", "update": "token stale \u2014 57d ago"}
 {"ts": "2026-11-06T05:02:49-0500", "color": "red", "update": "token stale \u2014 58d ago"}
+{"ts": "2026-11-07T05:00:49-0500", "color": "red", "update": "token stale \u2014 59d ago"}

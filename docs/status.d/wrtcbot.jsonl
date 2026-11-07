@@ -1,6 +1,4 @@
-{"label": "WRTCbot", "section": "agents", "order": 50, "source": "claude", "stale_hours": 170.0}
-{"ts": "2026-09-15T05:03:07-0400", "color": "gray", "update": "not scheduled today"}
-{"ts": "2026-09-16T12:00:07-0400", "color": "red", "update": "email draft failed", "next": "Fri 5 PM"}
+{"label": "WRTCbot", "section": "agents", "order": 50, "source": "claude", "stale_hours": 170}
 {"ts": "2026-09-17T05:07:46-0400", "color": "gray", "update": "not scheduled today"}
 {"ts": "2026-09-17T17:48:40-0400", "color": "red", "update": "email draft failed", "next": "Fri 5 PM"}
 {"ts": "2026-09-17T18:01:08-0400", "color": "green", "update": "email drafted, awaiting send", "next": "Fri 5 PM"}
@@ -60,3 +58,4 @@
 {"ts": "2026-11-03T05:03:16-0500", "color": "gray", "update": "not scheduled today"}
 {"ts": "2026-11-05T05:14:10-0500", "color": "gray", "update": "not scheduled today"}
 {"ts": "2026-11-06T22:03:47+0000", "color": "green", "update": "coffee sync: 19 drinks, awaiting send", "next": "Wed noon"}
+{"ts": "2026-11-07T05:00:49-0500", "color": "gray", "update": "not scheduled today"}
