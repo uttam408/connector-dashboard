@@ -1,10 +1,4 @@
-{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00", "stale_hours": 26.0}
-{"ts": "2026-11-06T08:01:53-0500", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-11-06T09:04:15-0500", "color": "green", "update": "digest sent"}
-{"ts": "2026-11-06T09:04:15-0500", "color": "green"}
-{"ts": "2026-11-07T06:10:58-0500", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-11-07T07:08:36-0500", "color": "green", "update": "watching for wake-up"}
-{"ts": "2026-11-07T08:06:04-0500", "color": "green", "update": "watching for wake-up"}
+{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00"}
 {"ts": "2026-11-07T09:09:31-0500", "color": "green", "update": "digest sent"}
 {"ts": "2026-11-07T09:09:31-0500", "color": "green"}
 {"ts": "2026-11-08T06:03:55-0500", "color": "green", "update": "watching for wake-up"}
@@ -64,3 +58,4 @@
 {"ts": "2026-11-20T18:32:46+0530", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-11-20T19:40:23+0530", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-11-21T16:44:10+0530", "color": "red", "update": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"}
+{"ts": "2026-11-21T16:44:10+0530", "color": "red", "update": "last run failed (exit 1)"}
