@@ -1,4 +1,4 @@
-{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00"}
+{"label": "morning-checkin", "section": "agents", "order": 10, "source": "claude", "schedule": "DAILY 06:00,07:00,08:00,09:00", "stale_hours": 26.0}
 {"ts": "2026-11-09T07:15:02-0500", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-11-09T08:00:23-0500", "color": "green", "update": "watching for wake-up"}
 {"ts": "2026-11-09T09:00:01-0500", "color": "green", "update": "watching for wake-up"}
@@ -59,3 +59,4 @@
 {"ts": "2026-11-24T08:06:52+0530", "color": "green", "update": "digest sent"}
 {"ts": "2026-11-24T09:00:00+0530", "color": "green", "update": "already sent today"}
 {"ts": "2026-11-24T09:00:00+0530", "color": "green"}
+{"ts": "2026-11-25T06:00:23+0530", "color": "green", "update": "digest sent"}
