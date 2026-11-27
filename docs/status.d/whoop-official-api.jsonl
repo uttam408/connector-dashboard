@@ -1,5 +1,4 @@
 {"label": "Whoop (official API)", "section": "services", "order": 40, "source": "claude"}
-{"ts": "2026-09-27T05:15:10-0400", "color": "green", "update": "token refreshed 20h ago"}
 {"ts": "2026-09-28T05:05:08-0400", "color": "green", "update": "token refreshed 20h ago"}
 {"ts": "2026-09-29T05:04:10-0400", "color": "green", "update": "token refreshed 22h ago"}
 {"ts": "2026-09-30T05:00:34-0400", "color": "green", "update": "token refreshed 20h ago"}
@@ -59,3 +58,4 @@
 {"ts": "2026-11-24T07:21:56+0530", "color": "red", "update": "token stale \u2014 3d ago"}
 {"ts": "2026-11-25T05:02:09+0530", "color": "green", "update": "token refreshed 21h ago"}
 {"ts": "2026-11-26T19:31:52+0530", "color": "red", "update": "token stale \u2014 38h ago"}
+{"ts": "2026-11-28T05:04:38+0530", "color": "red", "update": "token stale \u2014 3d ago"}
